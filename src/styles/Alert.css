@@ -1,0 +1,12 @@
+.app-alert-popup {
+
+    border: 1px solid #272829 !important;
+
+    border-radius: 10px !important;
+
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important;
+
+    padding: 0.75rem !important;
+
+    width: 320px !important;
+}

@@ -1,0 +1,45 @@
+.sidebar {
+
+    position: fixed;
+
+    top: 60px;
+
+    left: 10px;
+
+    background-color: white;
+
+    border-radius: 12px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    min-width: 180px;
+
+    overflow: hidden;
+
+    z-index: 3000;
+
+    padding: 8px 0;
+
+    box-shadow:
+        0 4px 10px rgba(0,0,0,0.15);
+}
+
+.sidebar a {
+
+    padding: 12px 18px;
+
+    text-decoration: none;
+
+    color: #1e293b;
+
+    font-size: 15px;
+
+    transition: background-color 0.2s;
+}
+
+.sidebar a:hover {
+
+    background-color: #f1f5f9;
+}
