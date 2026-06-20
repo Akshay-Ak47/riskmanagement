@@ -1,36 +1,17 @@
 import { Link } from "react-router-dom";
 
-type SidebarProps = {
-
-    isOpen: boolean;
-};
-
-function Sidebar({
-    isOpen
-}: SidebarProps) {
-
+function Sidebar() {
     return (
-
-        <div
-            className={
-                isOpen
-                    ? "sidebar open"
-                    : "sidebar closed"
-            }
-        >
-
-            <Link to="/">
-                Home
-            </Link>
+        <div className="sidebar">
+            <Link to="/">Home</Link>
 
             <Link to="/risk">
-                Risks
+                Add New Risks
             </Link>
 
-             <Link to="/history">
-                            view history
-                        </Link>
-
+            <Link to="/history">
+                View History
+            </Link>
         </div>
     );
 }

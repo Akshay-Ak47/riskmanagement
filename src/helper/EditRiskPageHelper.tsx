@@ -6,7 +6,7 @@ import { useParams } from "react-router-dom";
 
 import "./../styles/RiskPage.css";
 import type { RiskViewState } from "../types/riskView";
-import { getRiskByKey,getEditableRisk,createRiskVersion, handleOperationResult } from "../services/riskService";
+import {getEditableRisk,createRiskVersion, handleOperationResult } from "../services/riskService";
 import { useNavigate } from "react-router-dom";
 
 

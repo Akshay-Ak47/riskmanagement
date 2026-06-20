@@ -1,5 +1,5 @@
 import {
-    ReactNode,
+   type ReactNode,
     useState
 } from "react";
 
@@ -28,33 +28,26 @@ function Layout({
         setIsOpen(prev => !prev);
     };
 
-    return (
+   return (
+    <div>
+        <Header
+            toggleSidebar={toggleSidebar}
+            isOpen={isOpen}
+        />
 
-        <div>
+        {isOpen && <Sidebar />}
 
-            <Header
-                toggleSidebar={toggleSidebar}
-                isOpen={isOpen}
-            />
-
-            <Sidebar
-                isOpen={isOpen}
-            />
-
-           <div
-               className={
-                   isOpen
-                       ? "main-content sidebar-open"
-                       : "main-content sidebar-close"
-               }
-           >
-
-                {children}
-
-            </div>
-
+        <div
+            className={
+                isOpen
+                    ? "main-content sidebar-open"
+                    : "main-content sidebar-close"
+            }
+        >
+            {children}
         </div>
-    );
+    </div>
+);
 }
 
 export default Layout;

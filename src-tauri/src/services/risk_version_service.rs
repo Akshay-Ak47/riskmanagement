@@ -273,3 +273,15 @@ pub fn get_editable_risk(
         }
     }
 }
+
+pub fn get_risk_version_by_key(
+    conn: &Connection,
+    version_key: &str
+) -> Result<RiskVersionModel, String> {
+
+    risk_version_repository
+        ::get_risk_version_by_key(
+            conn,
+            version_key
+        )
+}

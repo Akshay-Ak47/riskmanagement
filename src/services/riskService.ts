@@ -128,3 +128,27 @@ export const handleOperationResult = async (
         return false;
     }
 };
+
+export const getRiskVersionByKey = async (
+    versionKey: string
+) => {
+
+    try {
+
+        return await invoke(
+            "get_risk_version_by_key",
+            {
+                versionKey
+            }
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Failed to fetch risk version:",
+            error
+        );
+
+        throw error;
+    }
+};

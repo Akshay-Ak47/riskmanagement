@@ -6,7 +6,7 @@ import {
 
 import Layout from "./layout/Layout";
 
-import HomePage from "./pages/HomePage";
+import HomePage from "./pages/Homepage";
 
 import RiskPage from "./pages/RiskPage";
 import EditRiskPage from "./pages/EditRiskPage";
@@ -17,6 +17,7 @@ import "./styles/Header.css";
 
 import "./styles/Sidebar.css";
 import ViewPage from "./pages/ViewPage";
+import SingleRiskViewPage from "./pages/SingleRiskViewPage";
 
 function App() {
 
@@ -51,6 +52,11 @@ function App() {
                                                path="/history"
                                                element={<RiskHistoryPage />}
                                       />
+
+                                      <Route
+                            path="/single/:issueKey"
+                            element={<SingleRiskViewPage />}
+                   />
 
 
 

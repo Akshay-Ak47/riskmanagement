@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { addProduct } from "../services/productService";
+import { addProduct } from "../services/ProductService";
 
 function ProductPage() {
 

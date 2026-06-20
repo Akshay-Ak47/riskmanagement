@@ -203,7 +203,7 @@ const result = await Swal.fire({
     title="Click to view"
     onClick={() =>
         navigate(
-            `/view/${risk.issue_key}`
+            `/single/${risk.issue_key}`
         )
     }
 >

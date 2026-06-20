@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 
 import type { RiskViewState } from "../types/riskView";
 import type { RiskVersionState } from "../types/riskVersion";
+import { useNavigate } from "react-router-dom";
 
 import {
     openDocument
@@ -33,6 +34,8 @@ function ViewPageHelper() {
         );
 
     }, [issueKey]);
+
+    const navigate = useNavigate();
 
     const loadVersions = useCallback(async () => {
 
@@ -175,7 +178,16 @@ function ViewPageHelper() {
                     key={version.version_key ?? ""}
                 >
 
-                    <td>{version.version_key}</td>
+                    <td
+    className="version-key-cell"
+    onClick={() =>
+        navigate(
+            `/single/${version.version_key}`
+        )
+    }
+>
+    {version.version_key}
+</td>
                     <td>{version.summary}</td>
                     <td>{version.status}</td>
                     <td>{version.risk_group}</td>

@@ -23,6 +23,7 @@ pub fn run() {
           commands::get_editable_risk::get_editable_risk,
           commands::risk_history_command::get_all_history,
           commands::open_document::open_document,
+          commands::get_risk_version_by_key::get_risk_version_by_key,
 
 
       ])

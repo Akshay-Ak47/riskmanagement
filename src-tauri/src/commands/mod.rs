@@ -8,3 +8,4 @@ pub mod get_risk_versions;
 pub mod get_editable_risk;
 pub mod risk_history_command;
 pub mod open_document;
+pub mod get_risk_version_by_key;
