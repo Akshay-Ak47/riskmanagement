@@ -1,828 +1,320 @@
-
-
-
 import { useEffect, useState, type ChangeEvent } from "react";
-import { useParams } from "react-router-dom";
-
-import "./../styles/RiskPage.css";
+import { useNavigate, useParams } from "react-router-dom";
+import { ActionButton, Card, PageContainer, PageHeader } from "../components/ui";
+import { createRiskVersion, getEditableRisk, handleOperationResult } from "../services/riskService";
 import type { RiskViewState } from "../types/riskView";
-import {getEditableRisk,createRiskVersion, handleOperationResult } from "../services/riskService";
-import { useNavigate } from "react-router-dom";
 
-
-
-const probabilityOptions = [
-    "Almost None",
-    "Low",
-    "Medium",
-    "High",
-    "Very High"
-];
-
-const consequenceOptions = [
-    "Trivial",
-    "Low",
-    "Medium",
-    "High",
-    "Severe"
-];
-
-const statusOptions = [
-    "",
-    "New",
-    "Active",
-    "Retired"
-];
-
-const groupOptions = [
-    "",
-    "Group A",
-    "Group B"
-];
-
-const greatestConsequenceOptions = [
-    "Scope",
-    "Cost",
-    "Schedule"
-];
-
+const probabilityOptions = ["Almost None", "Low", "Medium", "High", "Very High"];
+const consequenceOptions = ["Trivial", "Low", "Medium", "High", "Severe"];
+const statusOptions = ["", "New", "Active", "Retired"];
+const groupOptions = ["", "Group A", "Group B"];
+const greatestConsequenceOptions = ["Scope", "Cost", "Schedule"];
 const strategyOptions = [
-
-    {
-        value: "Avoid",
-        description:
-            "This strategy involves changing the project to eliminate the threat from identified risk."
-    },
-
-    {
-        value: "Mitigate",
-        description:
-            "This strategy involves taking early action to reduce the likelihood and/or impact of risk."
-    },
-
-    {
-        value: "Transfer",
-        description:
-            "This strategy involves shifting the responsibility and ownership of the risk to another party."
-    },
-
-    {
-        value: "Accept",
-        description:
-            "This strategy involves acknowledging the threat as part of the project and accepting the consequences."
-    }
+  { value: "Avoid", description: "Change the project to eliminate the threat from the identified risk." },
+  { value: "Mitigate", description: "Take early action to reduce the likelihood and/or impact of the risk." },
+  { value: "Transfer", description: "Shift ownership and control of the risk to another party." },
+  { value: "Accept", description: "Acknowledge the threat and accept the consequences as part of the workflow." },
 ];
 
- const initialRiskState: RiskViewState = {
-    issue_key: "",
-    summary: "",
-    status: "",
-    risk_group: "",
-    wbs_element: "",
-    attached_document_path: "",
-    description: "",
-    risk_probability: "",
-    risk_consequence: "",
-    greatest_risk_consequence: "",
-    risk_justification: "",
-    risk_response_strategy: "",
-    risk_response_actions: "",
-    residual_risk_probability: "",
-    residual_risk_consequence: "",
-    residual_risk_justification: "",
-    risk_scope: "",
-    risk_consequence_scope: "",
-    risk_cost: null,
-    risk_consequence_cost: "",
-    risk_schedule_start: "",
-    risk_schedule_end: "",
-    risk_consequence_schedule: "",
-    residual_risk_consequence_cost: "",
-    residual_risk_consequence_schedule: "",
-    residual_risk_consequence_scope: "",
-    comment: "",
-    risk_owner_name: "",
-    submitted_by: "",
-    created_at: ""
+const initialRiskState: RiskViewState = {
+  issue_key: "",
+  summary: "",
+  status: "",
+  risk_group: "",
+  wbs_element: "",
+  attached_document_path: "",
+  description: "",
+  risk_probability: "",
+  risk_consequence: "",
+  greatest_risk_consequence: "",
+  risk_justification: "",
+  risk_response_strategy: "",
+  risk_response_actions: "",
+  residual_risk_probability: "",
+  residual_risk_consequence: "",
+  residual_risk_justification: "",
+  risk_scope: "",
+  risk_consequence_scope: "",
+  risk_cost: null,
+  risk_consequence_cost: "",
+  risk_schedule_start: "",
+  risk_schedule_end: "",
+  risk_consequence_schedule: "",
+  residual_risk_consequence_cost: "",
+  residual_risk_consequence_schedule: "",
+  residual_risk_consequence_scope: "",
+  comment: "",
+  risk_owner_name: "",
+  submitted_by: "",
+  created_at: "",
 };
 
 function EditRiskPageHelper() {
+  const navigate = useNavigate();
+  const { issueKey } = useParams();
+  const [risk, setRisk] = useState<RiskViewState>(initialRiskState);
 
-    const navigate =  useNavigate();
-
-
-    const { issueKey } = useParams();
-
-     const [risk, setRisk] =
-            useState<RiskViewState>(
-                initialRiskState
-            );
-
-      const handleChange = (
-    e: ChangeEvent<
-        HTMLInputElement |
-        HTMLTextAreaElement |
-        HTMLSelectElement
-    >
-) => {
-
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-
-    setRisk(prev => ({
-        ...prev,
-        [name]: value
+    setRisk((prev) => ({
+      ...prev,
+      [name]: name === "risk_cost" ? (value === "" ? null : Number(value)) : value,
     }));
-};
-       
-const resetRiskForm = () => {
+  };
 
-    setRisk({
+  const resetRiskForm = () => {
+    setRisk(initialRiskState);
+  };
 
-        issue_key: "",
+  const selectedStrategy = strategyOptions.find((strategy) => strategy.value === risk.risk_response_strategy);
 
-        summary: "",
-
-        status: "",
-
-        risk_group: "",
-
-        wbs_element: "",
-
-        attached_document_path: "",
-
-        description: "",
-
-        risk_probability: "",
-
-        risk_consequence: "",
-
-        greatest_risk_consequence: "",
-
-        risk_justification: "",
-
-        risk_response_strategy: "",
-
-        risk_response_actions: "",
-
-        residual_risk_probability: "",
-
-        residual_risk_consequence: "",
-
-        residual_risk_justification: "",
-
-        risk_scope: "",
-
-        risk_consequence_scope: "",
-
-        risk_cost: null,
-
-        risk_consequence_cost: "",
-
-        risk_schedule_start: "",
-
-        risk_schedule_end: "",
-
-        risk_consequence_schedule: "",
-
-        residual_risk_consequence_cost: "",
-
-        residual_risk_consequence_schedule: "",
-
-        residual_risk_consequence_scope: "",
-
-        comment: "",
-
-        created_at: "",
-
-        risk_owner_name: "",
-
-        submitted_by: ""
-    });
-};
-
-const selectedStrategy =
-    strategyOptions.find(
-        strategy =>
-            strategy.value ===
-            risk.risk_response_strategy
-    );
-
-    const loadRisk = async () => {
-
-    const response =
-        await getEditableRisk(
-            issueKey as string
-        );
-
-    console.log(
-        "Backend Response:",
-        response
-    );
-
-    const riskData =
-        response as RiskViewState;
-
-    console.log(
-        "Risk Data:",
-        riskData
-    );
-
-    setRisk(riskData);
-};
-
-useEffect(() => {
-    const fetchRisk = async () => {
-        const response = await getEditableRisk(
-                             issueKey as string
-                         );
-
-        console.log("Backend Response:", response);
-
-        const riskData = response as RiskViewState;
-
-        console.log("Risk Data:", riskData);
-
-        setRisk(riskData);
-    };
-
-    void fetchRisk();
-}, [issueKey]);
-
-
-const createRisk = async () => {
-   
-    try {
-
-        const request = {
-
-            ...risk,
-
-            issue_key:
-                (risk as any).parent_issue_key ??
-                risk.issue_key
-        };
-
-        console.log(
-            "Sending:",
-            request
-        );
-
-       const success =
-    await handleOperationResult(
-
-        () =>
-            createRiskVersion(
-                request
-            ),
-
-        "Risk version created successfully",
-
-        "Failed to create risk version"
-    );
-
-if (success) {
-
-    resetRiskForm();
-     navigate("/");
-}
-
-    } catch (error) {
-
-        console.error(error);
+  const loadRisk = async () => {
+    if (!issueKey) {
+      return;
     }
-};
 
-    return (
-       <div className="risk-container">
-
-                   <h1>Edit Risk Register</h1>
-
-                   {/* SECTION 1 */}
-
-                   <div className="section-card">
-
-                       <h2>Risk Assignment</h2>
-
-                       <div className="grid-container">
-
-                           <input
-                                 value={
-                                      (risk as any).version_key ??
-                                      risk.issue_key
-                                  }
-                               disabled
-                           />
-
-                           <textarea
-                               name="summary"
-                               placeholder="Summary"
-                               value={risk.summary}
-                               onChange={handleChange}
-                           />
-
-                           <select
-                               name="status"
-                               value={risk.status}
-                               onChange={handleChange}
-                           >
-
-                               {statusOptions.map(status => (
-
-                                   <option
-                                       key={status}
-                                       value={status}
-                                   >
-                                       {status || "Select Status"}
-                                   </option>
-                               ))}
-
-                           </select>
-
-                           <select
-                               name="risk_group"
-                               value={risk.risk_group}
-                               onChange={handleChange}
-                           >
-
-                               {groupOptions.map(group => (
-
-                                   <option
-                                       key={group}
-                                       value={group}
-                                   >
-                                       {group || "Select Group"}
-                                   </option>
-                               ))}
-
-                           </select>
-
-                           <div className="wbs-upload-row">
-
-                               <input
-                                   name="wbs_element"
-                                   placeholder="WBS Element"
-                                   value={risk.wbs_element}
-                                   onChange={handleChange}
-                               />
-
-                               <input
-                                   type="file"
-                               />
-
-                           </div>
-
-                         <div className="field-card">
-
-                             <label>Description</label>
-
-                             <p className="field-info">
-                                 Write risk in "IF, THEN" statement format.
-                             </p>
-
-                             <textarea
-                                 className="small-textarea"
-                                 name="description"
-                                 placeholder="Enter Description"
-                                 value={risk.description}
-                                 onChange={handleChange}
-                             />
-
-                         </div>
-
-                           <select
-                               name="risk_probability"
-                               value={risk.risk_probability}
-                               onChange={handleChange}
-                           >
-
-                               <option value="">
-                                   Select Probability
-                               </option>
-
-                               {probabilityOptions.map(option => (
-
-                                   <option
-                                       key={option}
-                                       value={option}
-                                   >
-                                       {option}
-                                   </option>
-                               ))}
-
-                           </select>
-
-                           <select
-                               name="risk_consequence"
-                               value={risk.risk_consequence}
-                               onChange={handleChange}
-                           >
-
-                               <option value="">
-                                   Select Consequence
-                               </option>
-
-                               {consequenceOptions.map(option => (
-
-                                   <option
-                                       key={option}
-                                       value={option}
-                                   >
-                                       {option}
-                                   </option>
-                               ))}
-
-                           </select>
-
-                           <select
-                               name="greatest_risk_consequence"
-                               value={
-                                   risk.greatest_risk_consequence
-                               }
-                               onChange={handleChange}
-                           >
-
-                               <option value="">
-                                   Select Type
-                               </option>
-
-                               {greatestConsequenceOptions.map(option => (
-
-                                   <option
-                                       key={option}
-                                       value={option}
-                                   >
-                                       {option}
-                                   </option>
-                               ))}
-
-                           </select>
-
-                           <textarea
-                               name="risk_justification"
-                               placeholder="Risk Justification"
-                               value={risk.risk_justification}
-                               onChange={handleChange}
-                           />
-
-                           <div>
-
-                               <select
-                                   name="risk_response_strategy"
-                                   value={
-                                       risk.risk_response_strategy
-                                   }
-                                   onChange={handleChange}
-                               >
-
-                                   <option value="">
-                                       Select Strategy
-                                   </option>
-
-                                   {strategyOptions.map(strategy => (
-
-                                       <option
-                                           key={strategy.value}
-                                           value={strategy.value}
-                                       >
-                                           {strategy.value}
-                                       </option>
-                                   ))}
-
-                               </select>
-
-                               {selectedStrategy && (
-
-                                   <p className="field-info">
-
-                                       {
-                                           selectedStrategy.description
-                                       }
-
-                                   </p>
-                               )}
-
-                           </div>
-
-                          <div className="field-card">
-
-                              <label>Risk Response Actions</label>
-
-                              <p className="field-info">
-                                  Use:
-                                  [Potential],
-                                  [Planned],
-                                  [In Progress],
-                                  [Executed]
-                              </p>
-
-                              <textarea
-                                  className="small-textarea"
-                                  name="risk_response_actions"
-                                  placeholder="Enter Risk Response Actions"
-                                  value={risk.risk_response_actions}
-                                  onChange={handleChange}
-                              />
-
-                          </div>
-
-                           <select
-                               name="residual_risk_probability"
-                               value={
-                                   risk.residual_risk_probability
-                               }
-                               onChange={handleChange}
-                           >
-
-                               <option value="">
-                                   Select Residual Probability
-                               </option>
-
-                               {probabilityOptions.map(option => (
-
-                                   <option
-                                       key={option}
-                                       value={option}
-                                   >
-                                       {option}
-                                   </option>
-                               ))}
-
-                           </select>
-
-                           <select
-                               name="residual_risk_consequence"
-                               value={
-                                   risk.residual_risk_consequence
-                               }
-                               onChange={handleChange}
-                           >
-
-                               <option value="">
-                                   Select Residual Consequence
-                               </option>
-
-                               {consequenceOptions.map(option => (
-
-                                   <option
-                                       key={option}
-                                       value={option}
-                                   >
-                                       {option}
-                                   </option>
-                               ))}
-
-                           </select>
-
-                           <textarea
-                               name="residual_risk_justification"
-                               placeholder="Residual Risk Justification"
-                               value={
-                                   risk.residual_risk_justification
-                               }
-                               onChange={handleChange}
-                           />
-
-                       </div>
-                   </div>
-
-                   {/* SECTION 2 */}
-
-                   <div className="section-card">
-
-                       <h2>Risk Details</h2>
-
-                       <div className="grid-container">
-
-                           <input
-                               value={risk.risk_scope}
-                               disabled
-                           />
-
-                           <select
-                               name="risk_consequence_scope"
-                               value={
-                                   risk.risk_consequence_scope
-                               }
-                               onChange={handleChange}
-                           >
-
-                               <option value="">
-                                   Select Consequence Scope
-                               </option>
-
-                               {consequenceOptions.map(option => (
-
-                                   <option
-                                       key={option}
-                                       value={option}
-                                   >
-                                       {option}
-                                   </option>
-                               ))}
-
-                           </select>
-
-                           <input
-                               type="number"
-                               name="risk_cost"
-                               placeholder="Risk Cost (INR)"
-                               value={risk.risk_cost ?? ""}
-                               onChange={handleChange}
-                           />
-
-                           <input
-                               value={risk.risk_consequence_cost}
-                               disabled
-                           />
-
-                           <div className="schedule-row">
-
-                               <div>
-
-                                   <label>
-                                       Schedule Date
-                                   </label>
-
-                                   <input
-                                       type="date"
-                                       name="risk_schedule_start"
-                                       value={
-                                           risk.risk_schedule_start
-                                       }
-                                       onChange={handleChange}
-                                   />
-
-                               </div>
-
-                               <div>
-
-                                   <label>
-                                       Delay Date
-                                   </label>
-
-                                   <input
-                                       type="date"
-                                       name="risk_schedule_end"
-                                       value={
-                                           risk.risk_schedule_end
-                                       }
-                                       onChange={handleChange}
-                                   />
-
-                               </div>
-
-                           </div>
-
-                           <input
-                               value={risk.risk_consequence_schedule}
-                               disabled
-                           />
-
-                       </div>
-                   </div>
-
-                   {/* SECTION 3 */}
-
-                   <div className="section-card">
-
-                       <h2>Residual Risk Details</h2>
-
-                       <div className="grid-container">
-
-                           <select
-                               name="residual_risk_consequence_cost"
-                               value={
-                                   risk.residual_risk_consequence_cost
-                               }
-                               onChange={handleChange}
-                           >
-
-                               <option value="">
-                                   Select Residual Cost
-                               </option>
-
-                               {consequenceOptions.map(option => (
-
-                                   <option
-                                       key={option}
-                                       value={option}
-                                   >
-                                       {option}
-                                   </option>
-                               ))}
-
-                           </select>
-
-                           <select
-                               name="residual_risk_consequence_schedule"
-                               value={
-                                   risk.residual_risk_consequence_schedule
-                               }
-                               onChange={handleChange}
-                           >
-
-                               <option value="">
-                                   Select Residual Schedule
-                               </option>
-
-                               {consequenceOptions.map(option => (
-
-                                   <option
-                                       key={option}
-                                       value={option}
-                                   >
-                                       {option}
-                                   </option>
-                               ))}
-
-                           </select>
-
-                           <select
-                               name="residual_risk_consequence_scope"
-                               value={
-                                   risk.residual_risk_consequence_scope
-                               }
-                               onChange={handleChange}
-                           >
-
-                               <option value="">
-                                   Select Residual Scope
-                               </option>
-
-                               {consequenceOptions.map(option => (
-
-                                   <option
-                                       key={option}
-                                       value={option}
-                                   >
-                                       {option}
-                                   </option>
-                               ))}
-
-                           </select>
-
-                       </div>
-                   </div>
-
-                   {/* SECTION 4 */}
-
-                   <div className="section-card">
-
-                       <h2>Others</h2>
-
-                       <div className="grid-container">
-
-                           <textarea
-                               name="comment"
-                               placeholder="Comment"
-                               value={risk.comment}
-                               onChange={handleChange}
-                           />
-
-                           <input
-                               value={risk.created_at}
-                               disabled
-                           />
-
-                           <input
-                               name="submitted_by"
-                               placeholder="Submitted By"
-                               value={risk.submitted_by}
-                               onChange={handleChange}
-                           />
-
-                           <input
-                               name="risk_owner_name"
-                               placeholder="Risk Owner"
-                               value={risk.risk_owner_name}
-                               onChange={handleChange}
-                           />
-
-                       </div>
-                   </div>
-
-                   <div className="button-row">
-
-                       <button
-                           className="submit-btn"
-                           onClick={createRisk}
-                       >
-                           Create Risk version
-                       </button>
-
-                       <button
-                           type="button"
-                           className="reset-btn"
-                           onClick={loadRisk}
-                       >
-                           Reset
-                       </button>
-
-                   </div>
-
-               </div>
-
-    );
+    const response = await getEditableRisk(issueKey);
+    setRisk(response as RiskViewState);
+  };
+
+  useEffect(() => {
+    void loadRisk();
+  }, [issueKey]);
+
+  const createRisk = async () => {
+    try {
+      const request = {
+        ...risk,
+        issue_key: risk.issue_key,
+      };
+
+      const success = await handleOperationResult(
+        () => createRiskVersion(request),
+        "Risk version created successfully",
+        "Failed to create risk version"
+      );
+
+      if (success) {
+        resetRiskForm();
+        navigate("/");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  return (
+    <PageContainer>
+      <PageHeader
+        title="Edit risk"
+        description="Refine the existing risk details and keep the response plan aligned with the latest context."
+        eyebrow="Risk update"
+        actions={<ActionButton variant="secondary" onClick={() => navigate("/")}>Back to overview</ActionButton>}
+      />
+
+      <Card title="Risk assignment" description="Update the core details and response planning for this risk.">
+        <div className="form-grid form-grid--wide">
+          <label className="field-group">
+            <span className="field-label">Issue key</span>
+            <input className="input" value={risk.issue_key || ""} disabled />
+          </label>
+          <label className="field-group">
+            <span className="field-label">Summary</span>
+            <textarea className="textarea" name="summary" placeholder="Summary" value={risk.summary} onChange={handleChange} />
+          </label>
+          <label className="field-group">
+            <span className="field-label">Status</span>
+            <select className="select" name="status" value={risk.status} onChange={handleChange}>
+              {statusOptions.map((status) => (
+                <option key={status} value={status}>{status || "Select status"}</option>
+              ))}
+            </select>
+          </label>
+          <label className="field-group">
+            <span className="field-label">Risk group</span>
+            <select className="select" name="risk_group" value={risk.risk_group} onChange={handleChange}>
+              {groupOptions.map((group) => (
+                <option key={group} value={group}>{group || "Select group"}</option>
+              ))}
+            </select>
+          </label>
+          <label className="field-group">
+            <span className="field-label">WBS element</span>
+            <input className="input" name="wbs_element" placeholder="WBS Element" value={risk.wbs_element} onChange={handleChange} />
+          </label>
+          <div className="field-group">
+            <span className="field-label">Description</span>
+            <p className="field-help">Capture the risk in a clear IF / THEN style statement.</p>
+            <textarea className="textarea" name="description" placeholder="Enter description" value={risk.description} onChange={handleChange} />
+          </div>
+          <label className="field-group">
+            <span className="field-label">Probability</span>
+            <select className="select" name="risk_probability" value={risk.risk_probability} onChange={handleChange}>
+              <option value="">Select probability</option>
+              {probabilityOptions.map((option) => (
+                <option key={option} value={option}>{option}</option>
+              ))}
+            </select>
+          </label>
+          <label className="field-group">
+            <span className="field-label">Consequence</span>
+            <select className="select" name="risk_consequence" value={risk.risk_consequence} onChange={handleChange}>
+              <option value="">Select consequence</option>
+              {consequenceOptions.map((option) => (
+                <option key={option} value={option}>{option}</option>
+              ))}
+            </select>
+          </label>
+          <label className="field-group">
+            <span className="field-label">Greatest consequence</span>
+            <select className="select" name="greatest_risk_consequence" value={risk.greatest_risk_consequence} onChange={handleChange}>
+              <option value="">Select type</option>
+              {greatestConsequenceOptions.map((option) => (
+                <option key={option} value={option}>{option}</option>
+              ))}
+            </select>
+          </label>
+          <label className="field-group">
+            <span className="field-label">Risk justification</span>
+            <textarea className="textarea" name="risk_justification" placeholder="Risk justification" value={risk.risk_justification} onChange={handleChange} />
+          </label>
+          <div className="field-group">
+            <span className="field-label">Response strategy</span>
+            <select className="select" name="risk_response_strategy" value={risk.risk_response_strategy} onChange={handleChange}>
+              <option value="">Select strategy</option>
+              {strategyOptions.map((strategy) => (
+                <option key={strategy.value} value={strategy.value}>{strategy.value}</option>
+              ))}
+            </select>
+            {selectedStrategy ? <p className="field-help">{selectedStrategy.description}</p> : null}
+          </div>
+          <div className="field-group">
+            <span className="field-label">Response actions</span>
+            <p className="field-help">Use [Potential], [Planned], [In Progress], or [Executed].</p>
+            <textarea className="textarea" name="risk_response_actions" placeholder="Enter risk response actions" value={risk.risk_response_actions} onChange={handleChange} />
+          </div>
+          <label className="field-group">
+            <span className="field-label">Residual probability</span>
+            <select className="select" name="residual_risk_probability" value={risk.residual_risk_probability} onChange={handleChange}>
+              <option value="">Select residual probability</option>
+              {probabilityOptions.map((option) => (
+                <option key={option} value={option}>{option}</option>
+              ))}
+            </select>
+          </label>
+          <label className="field-group">
+            <span className="field-label">Residual consequence</span>
+            <select className="select" name="residual_risk_consequence" value={risk.residual_risk_consequence} onChange={handleChange}>
+              <option value="">Select residual consequence</option>
+              {consequenceOptions.map((option) => (
+                <option key={option} value={option}>{option}</option>
+              ))}
+            </select>
+          </label>
+          <label className="field-group">
+            <span className="field-label">Residual justification</span>
+            <textarea className="textarea" name="residual_risk_justification" placeholder="Residual risk justification" value={risk.residual_risk_justification} onChange={handleChange} />
+          </label>
+        </div>
+      </Card>
+
+      <Card title="Risk details" description="Adjust scope, cost, timing, and downstream exposure.">
+        <div className="form-grid form-grid--wide">
+          <label className="field-group">
+            <span className="field-label">Risk scope</span>
+            <input className="input" value={risk.risk_scope || ""} disabled />
+          </label>
+          <label className="field-group">
+            <span className="field-label">Consequence scope</span>
+            <select className="select" name="risk_consequence_scope" value={risk.risk_consequence_scope} onChange={handleChange}>
+              <option value="">Select consequence scope</option>
+              {consequenceOptions.map((option) => (
+                <option key={option} value={option}>{option}</option>
+              ))}
+            </select>
+          </label>
+          <label className="field-group">
+            <span className="field-label">Risk cost</span>
+            <input className="input" type="number" name="risk_cost" placeholder="Risk Cost (INR)" value={risk.risk_cost ?? ""} onChange={handleChange} />
+          </label>
+          <label className="field-group">
+            <span className="field-label">Consequence cost</span>
+            <input className="input" value={risk.risk_consequence_cost || ""} disabled />
+          </label>
+          <label className="field-group">
+            <span className="field-label">Schedule start</span>
+            <input className="input" type="date" name="risk_schedule_start" value={risk.risk_schedule_start} onChange={handleChange} />
+          </label>
+          <label className="field-group">
+            <span className="field-label">Schedule end</span>
+            <input className="input" type="date" name="risk_schedule_end" value={risk.risk_schedule_end} onChange={handleChange} />
+          </label>
+          <label className="field-group">
+            <span className="field-label">Consequence schedule</span>
+            <input className="input" value={risk.risk_consequence_schedule || ""} disabled />
+          </label>
+        </div>
+      </Card>
+
+      <Card title="Residual risk details" description="Track the post-mitigation view for cost, schedule, and scope.">
+        <div className="form-grid form-grid--wide">
+          <label className="field-group">
+            <span className="field-label">Residual cost</span>
+            <select className="select" name="residual_risk_consequence_cost" value={risk.residual_risk_consequence_cost} onChange={handleChange}>
+              <option value="">Select residual cost</option>
+              {consequenceOptions.map((option) => (
+                <option key={option} value={option}>{option}</option>
+              ))}
+            </select>
+          </label>
+          <label className="field-group">
+            <span className="field-label">Residual schedule</span>
+            <select className="select" name="residual_risk_consequence_schedule" value={risk.residual_risk_consequence_schedule} onChange={handleChange}>
+              <option value="">Select residual schedule</option>
+              {consequenceOptions.map((option) => (
+                <option key={option} value={option}>{option}</option>
+              ))}
+            </select>
+          </label>
+          <label className="field-group">
+            <span className="field-label">Residual scope</span>
+            <select className="select" name="residual_risk_consequence_scope" value={risk.residual_risk_consequence_scope} onChange={handleChange}>
+              <option value="">Select residual scope</option>
+              {consequenceOptions.map((option) => (
+                <option key={option} value={option}>{option}</option>
+              ))}
+            </select>
+          </label>
+        </div>
+      </Card>
+
+      <Card title="Additional context" description="Ownership and notes for follow-up.">
+        <div className="form-grid form-grid--wide">
+          <label className="field-group">
+            <span className="field-label">Comment</span>
+            <textarea className="textarea" name="comment" placeholder="Comment" value={risk.comment} onChange={handleChange} />
+          </label>
+          <label className="field-group">
+            <span className="field-label">Created at</span>
+            <input className="input" value={risk.created_at || ""} disabled />
+          </label>
+          <label className="field-group">
+            <span className="field-label">Submitted by</span>
+            <input className="input" name="submitted_by" placeholder="Submitted By" value={risk.submitted_by} onChange={handleChange} />
+          </label>
+          <label className="field-group">
+            <span className="field-label">Risk owner</span>
+            <input className="input" name="risk_owner_name" placeholder="Risk Owner" value={risk.risk_owner_name} onChange={handleChange} />
+          </label>
+        </div>
+      </Card>
+
+      <div className="u-flex u-gap-3 u-wrap">
+        <ActionButton variant="primary" onClick={createRisk}>Create risk version</ActionButton>
+        <ActionButton variant="secondary" onClick={loadRisk}>Reset</ActionButton>
+      </div>
+    </PageContainer>
+  );
 }
 
 export default EditRiskPageHelper;

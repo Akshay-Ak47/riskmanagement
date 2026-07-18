@@ -1,5 +1,4 @@
 import Swal from "sweetalert2";
-import "../styles/Alert.css";
 
 export const showMessage = (
     icon: "success" | "error" | "warning" | "info",

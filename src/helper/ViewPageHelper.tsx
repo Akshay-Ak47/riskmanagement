@@ -1,261 +1,112 @@
-import { useParams } from "react-router-dom";
-import { getRiskByKey, getRiskVersions } from "../services/riskService";
 import { useCallback, useEffect, useState } from "react";
-
+import { useNavigate, useParams } from "react-router-dom";
+import { getRiskByKey, getRiskVersions, openDocument } from "../services/riskService";
 import type { RiskViewState } from "../types/riskView";
 import type { RiskVersionState } from "../types/riskVersion";
-import { useNavigate } from "react-router-dom";
-
-import {
-    openDocument
-} from "../services/riskService";
-
-import "../styles/ViewPageHelper.css";
+import { Card, DataTable, EmptyState, PageContainer, PageHeader, StatusBadge } from "../components/ui";
 
 function ViewPageHelper() {
+  const { issueKey } = useParams();
+  const navigate = useNavigate();
+  const [risk, setRisk] = useState<RiskViewState | null>(null);
+  const [versions, setVersions] = useState<RiskVersionState[]>([]);
 
-    const { issueKey } = useParams();
+  const loadRisk = useCallback(async () => {
+    const response = await getRiskByKey(issueKey as string);
+    setRisk(response as RiskViewState);
+  }, [issueKey]);
 
-    const [risk, setRisk] =
-        useState<RiskViewState | null>(null);
+  const loadVersions = useCallback(async () => {
+    const response = await getRiskVersions(issueKey as string);
+    setVersions(response as RiskVersionState[]);
+  }, [issueKey]);
 
-    const [versions, setVersions] =
-        useState<RiskVersionState[]>([]);
+  useEffect(() => {
+    const fetchData = async () => {
+      await loadRisk();
+      await loadVersions();
+    };
 
-    const loadRisk = useCallback(async () => {
+    void fetchData();
+  }, [loadRisk, loadVersions]);
 
-        const response =
-            await getRiskByKey(
-                issueKey as string
-            );
+  return (
+    <PageContainer>
+      <PageHeader title="Risk details & history" description="Review the live risk record and all versioned changes stored for this item." />
 
-        setRisk(
-            response as RiskViewState
-        );
-
-    }, [issueKey]);
-
-    const navigate = useNavigate();
-
-    const loadVersions = useCallback(async () => {
-
-        const response =
-            await getRiskVersions(
-                issueKey as string
-            );
-
-        setVersions(
-            response as RiskVersionState[]
-        );
-
-    }, [issueKey]);
-
-    useEffect(() => {
-
-        const fetchData = async () => {
-
-            await loadRisk();
-
-            await loadVersions();
-
-        };
-
-        void fetchData();
-
-    }, [loadRisk, loadVersions]);
-
-    return (
-
-       <div className="view-container">
-
-    <h1>
-        Risk Details & Version History
-    </h1>
-
-    <table className="risk-table">
-
-        <thead>
-
-            <tr>
-
-                <th>Issue / Version Key</th>
-                <th>Summary</th>
-                <th>Status</th>
-                <th>Risk Group</th>
-                <th>WBS Element</th>
-                <th>Attached Document</th>
-                <th>Description</th>
-                <th>Risk Probability</th>
-                <th>Risk Consequence</th>
-                <th>Greatest Consequence</th>
-                <th>Risk Justification</th>
-                <th>Response Strategy</th>
-                <th>Response Actions</th>
-                <th>Residual Probability</th>
-                <th>Residual Consequence</th>
-                <th>Residual Justification</th>
-                <th>Risk Scope</th>
-                <th>Consequence Scope</th>
-                <th>Risk Cost</th>
-                <th>Consequence Cost</th>
-                <th>Schedule Start</th>
-                <th>Schedule End</th>
-                <th>Consequence Schedule</th>
-                <th>Residual Cost</th>
-                <th>Residual Schedule</th>
-                <th>Residual Scope</th>
-                <th>Comment</th>
-                <th>Risk Owner</th>
-                <th>Submitted By</th>
-                <th>Created At</th>
-
-            </tr>
-
-        </thead>
-
-        <tbody>
-
-            {risk && (
-
-                <tr className="main-risk-row">
-
-                    <td>{risk.issue_key}</td>
-                    <td>{risk.summary}</td>
-                    <td>{risk.status}</td>
-                    <td>{risk.risk_group}</td>
-                    <td>{risk.wbs_element}</td>
-                      <td
-                        className={
-                            risk.attached_document_path
-                                ? "document-link"
-                                : ""
-                        }
-                        onClick={() =>
-                            risk.attached_document_path &&
-                            openDocument(
-                                risk.attached_document_path
-                            )
-                        }
-                    >
-                        {
-                            risk.attached_document_path
-                                ? "View Document"
-                                : "Document not found"
-                        }
-                    </td>
-                    <td>{risk.description}</td>
-                    <td>{risk.risk_probability}</td>
-                    <td>{risk.risk_consequence}</td>
-                    <td>{risk.greatest_risk_consequence}</td>
-                    <td>{risk.risk_justification}</td>
-                    <td>{risk.risk_response_strategy}</td>
-                    <td>{risk.risk_response_actions}</td>
-                    <td>{risk.residual_risk_probability}</td>
-                    <td>{risk.residual_risk_consequence}</td>
-                    <td>{risk.residual_risk_justification}</td>
-                    <td>{risk.risk_scope}</td>
-                    <td>{risk.risk_consequence_scope}</td>
-                    <td>{risk.risk_cost}</td>
-                    <td>{risk.risk_consequence_cost}</td>
-                    <td>{risk.risk_schedule_start}</td>
-                    <td>{risk.risk_schedule_end}</td>
-                    <td>{risk.risk_consequence_schedule}</td>
-                    <td>{risk.residual_risk_consequence_cost}</td>
-                    <td>{risk.residual_risk_consequence_schedule}</td>
-                    <td>{risk.residual_risk_consequence_scope}</td>
-                    <td>{risk.comment}</td>
-                    <td>{risk.risk_owner_name}</td>
-                    <td>{risk.submitted_by}</td>
-                    <td>{risk.created_at}</td>
-
-                </tr>
-
-            )}
-
-            {versions.map(version => (
-
-                <tr
-                    key={version.version_key ?? ""}
-                >
-
-                    <td
-    className="version-key-cell"
-    onClick={() =>
-        navigate(
-            `/single/${version.version_key}`
-        )
-    }
->
-    {version.version_key}
-</td>
-                    <td>{version.summary}</td>
-                    <td>{version.status}</td>
-                    <td>{version.risk_group}</td>
-                    <td>{version.wbs_element}</td>
-                    <td
-                        className={
-                            version.attached_document_path
-                                ? "document-link"
-                                : ""
-                        }
-                        onClick={() =>
-                            version.attached_document_path &&
-                            openDocument(
-                                version.attached_document_path
-                            )
-                        }
-                    >
-                        {
-                            version.attached_document_path
-                                ? "View Document"
-                                : "Document not found"
-                        }
-                    </td>
-                    <td>{version.description}</td>
-                    <td>{version.risk_probability}</td>
-                    <td>{version.risk_consequence}</td>
-                    <td>{version.greatest_risk_consequence}</td>
-                    <td>{version.risk_justification}</td>
-                    <td>{version.risk_response_strategy}</td>
-                    <td>{version.risk_response_actions}</td>
-                    <td>{version.residual_risk_probability}</td>
-                    <td>{version.residual_risk_consequence}</td>
-                    <td>{version.residual_risk_justification}</td>
-                    <td>{version.risk_scope}</td>
-                    <td>{version.risk_consequence_scope}</td>
-                    <td>{version.risk_cost}</td>
-                    <td>{version.risk_consequence_cost}</td>
-                    <td>{version.risk_schedule_start}</td>
-                    <td>{version.risk_schedule_end}</td>
-                    <td>{version.risk_consequence_schedule}</td>
-                    <td>{version.residual_risk_consequence_cost}</td>
-                    <td>{version.residual_risk_consequence_schedule}</td>
-                    <td>{version.residual_risk_consequence_scope}</td>
-                    <td>{version.comment}</td>
-                    <td>{version.risk_owner_name}</td>
-                    <td>{version.submitted_by}</td>
-                    <td>{version.created_at}</td>
-
-                </tr>
-
-            ))}
-
-        </tbody>
-
-    </table>
-
-    {versions.length === 0 && (
-
-        <div className="empty-message">
-
-            No versions available for this risk.
-
+      {risk ? (
+        <div className="summary-grid">
+          <div className="metric-card">
+            <span className="metric-card__label">Issue key</span>
+            <span className="metric-card__value">{risk.issue_key}</span>
+          </div>
+          <div className="metric-card">
+            <span className="metric-card__label">Status</span>
+            <span className="metric-card__value"><StatusBadge label={risk.status || "-"} tone={risk.status === "Active" ? "success" : risk.status === "New" ? "info" : "neutral"} /></span>
+          </div>
+          <div className="metric-card">
+            <span className="metric-card__label">Risk group</span>
+            <span className="metric-card__value">{risk.risk_group || "-"}</span>
+          </div>
+          <div className="metric-card">
+            <span className="metric-card__label">Owner</span>
+            <span className="metric-card__value">{risk.risk_owner_name || "-"}</span>
+          </div>
         </div>
+      ) : null}
 
-    )}
+      <Card title="Version timeline" description="The primary record appears first, followed by all available versions.">
+        <DataTable headers={["Issue / version key", "Summary", "Status", "Group", "Owner", "Probability", "Consequence", "Document", "Actions"]}>
+          {risk ? (
+            <tr>
+              <td>
+                <button type="button" className="text-link" onClick={() => navigate(`/single/${risk.issue_key}`)}>{risk.issue_key}</button>
+              </td>
+              <td>{risk.summary || "-"}</td>
+              <td><StatusBadge label={risk.status || "-"} tone={risk.status === "Active" ? "success" : risk.status === "New" ? "info" : "neutral"} /></td>
+              <td>{risk.risk_group || "-"}</td>
+              <td>{risk.risk_owner_name || "-"}</td>
+              <td>{risk.risk_probability || "-"}</td>
+              <td>{risk.risk_consequence || "-"}</td>
+              <td>
+                <button type="button" className="text-link" onClick={() => risk.attached_document_path && openDocument(risk.attached_document_path)}>
+                  {risk.attached_document_path ? "Open document" : "No document"}
+                </button>
+              </td>
+              <td>
+                <button type="button" className="text-link" onClick={() => navigate(`/edit/${risk.issue_key}`)}>Edit</button>
+              </td>
+            </tr>
+          ) : null}
+          {versions.map((version) => (
+            <tr key={version.version_key ?? ""}>
+              <td>
+                <button type="button" className="text-link" onClick={() => navigate(`/single/${version.version_key}`)}>{version.version_key}</button>
+              </td>
+              <td>{version.summary || "-"}</td>
+              <td><StatusBadge label={version.status || "-"} tone={version.status === "Active" ? "success" : version.status === "New" ? "info" : "neutral"} /></td>
+              <td>{version.risk_group || "-"}</td>
+              <td>{version.risk_owner_name || "-"}</td>
+              <td>{version.risk_probability || "-"}</td>
+              <td>{version.risk_consequence || "-"}</td>
+              <td>
+                <button type="button" className="text-link" onClick={() => version.attached_document_path && openDocument(version.attached_document_path)}>
+                  {version.attached_document_path ? "Open document" : "No document"}
+                </button>
+              </td>
+              <td>
+                <button type="button" className="text-link" onClick={() => navigate(`/single/${version.version_key}`)}>Inspect</button>
+              </td>
+            </tr>
+          ))}
+        </DataTable>
+      </Card>
 
-</div>
-    );
+      {versions.length === 0 && !risk ? (
+        <EmptyState title="No versions available" description="There is no versioned history for this risk yet." />
+      ) : null}
+    </PageContainer>
+  );
 }
 
 export default ViewPageHelper;

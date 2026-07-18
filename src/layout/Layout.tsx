@@ -1,53 +1,49 @@
-import {
-   type ReactNode,
-    useState
-} from "react";
-
-import "./../styles/Layout.css";
-
+import { type ReactNode, useEffect, useState } from "react";
 import Header from "./Header";
-
 import Sidebar from "./Sidebar";
 
 type LayoutProps = {
-
-    children: ReactNode;
+  children: ReactNode;
 };
 
-function Layout({
-    children
-}: LayoutProps) {
+function Layout({ children }: LayoutProps) {
+  const [isMobile, setIsMobile] = useState(() => (typeof window !== "undefined" ? window.innerWidth < 840 : false));
+  const [isOpen, setIsOpen] = useState(() => (typeof window !== "undefined" ? window.innerWidth >= 840 : true));
 
-    const [isOpen, setIsOpen] =
-        useState(false);
-
-    const toggleSidebar = () => {
-
-        console.log("clicked");
-
-        setIsOpen(prev => !prev);
+  useEffect(() => {
+    const onResize = () => {
+      const mobile = window.innerWidth < 840;
+      setIsMobile(mobile);
+      setIsOpen(mobile ? false : true);
     };
 
-   return (
-    <div>
-        <Header
-            toggleSidebar={toggleSidebar}
-            isOpen={isOpen}
-        />
+    onResize();
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
 
-        {isOpen && <Sidebar />}
+  const toggleSidebar = () => {
+    setIsOpen((prev) => !prev);
+  };
 
-        <div
-            className={
-                isOpen
-                    ? "main-content sidebar-open"
-                    : "main-content sidebar-close"
-            }
-        >
-            {children}
-        </div>
+  const closeSidebar = () => {
+    if (isMobile) {
+      setIsOpen(false);
+    }
+  };
+
+  const isCollapsed = !isOpen && !isMobile;
+
+  return (
+    <div className="app-shell">
+      <Header toggleSidebar={toggleSidebar} isOpen={isOpen} />
+      {isMobile && isOpen ? <button className="sidebar-overlay" aria-label="Close navigation" onClick={closeSidebar} /> : null}
+      <div className="app-shell__body">
+        <Sidebar isOpen={isOpen} isCollapsed={isCollapsed} onNavigate={closeSidebar} />
+        <main className="page-main">{children}</main>
+      </div>
     </div>
-);
+  );
 }
 
 export default Layout;
