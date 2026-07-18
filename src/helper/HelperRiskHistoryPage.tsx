@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { getAllHistory } from "../services/riskService";
 
 import type { RiskHistory } from "../types/riskHistory";
+import "../styles/RiskHistoryPage.css";
 
 function HelperRiskHistoryPage() {
 
@@ -42,31 +43,21 @@ function HelperRiskHistoryPage() {
 
     }, []);
 
-    return (
+   return (
 
-    <div>
+    <div className="history-container">
 
-        <h2>
+        <h1 className="history-title">
             Risk History
-        </h2>
+        </h1>
 
-        <p>
+        <div className="history-count">
             Records: {history.length}
-        </p>
+        </div>
 
-        <div
-            style={{
-                overflowX: "auto",
-                maxWidth: "100%"
-            }}
-        >
+        <div className="history-table-wrapper">
 
-            <table
-                style={{
-                    borderCollapse: "collapse",
-                    minWidth: "5000px"
-                }}
-            >
+            <table className="history-table">
 
                 <thead>
 

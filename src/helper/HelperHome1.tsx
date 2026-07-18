@@ -6,9 +6,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import type { RiskViewState } from "../types/riskView";
 import Swal from "sweetalert2";
-import {
-    openDocument
-} from "../services/riskService";
+
 
 
 import {
@@ -152,7 +150,7 @@ const result = await Swal.fire({
                                     <th>Summary</th>
                                     <th>Status</th>
                                     <th>Risk Group</th>
-                                    <th>WBS Element</th>
+                                    {/* <th>WBS Element</th>
                                     <th>attached_document</th>
                                     <th>Description</th>
                                     <th>Probability</th>
@@ -173,7 +171,7 @@ const result = await Swal.fire({
                                     <th>Consequence Schedule</th>
                                     <th>Residual Cost</th>
                                     <th>Residual Schedule</th>
-                                    <th>Residual Scope</th>
+                                    <th>Residual Scope</th> */}
                                     <th>Comment</th>
                                     <th>Created At</th>
                                     <th>Risk Owner</th>
@@ -212,7 +210,7 @@ const result = await Swal.fire({
                                                 <td>{risk.summary || "-"}</td>
                                                 <td>{risk.status || "-"}</td>
                                                 <td>{risk.risk_group || "-"}</td>
-                                                <td>{risk.wbs_element || "-"}</td>
+                                                {/* <td>{risk.wbs_element || "-"}</td>
                                                 <td
     className={
         risk.attached_document_path
@@ -251,7 +249,7 @@ const result = await Swal.fire({
                                                 <td>{risk.risk_consequence_schedule || "-"}</td>
                                                 <td>{risk.residual_risk_consequence_cost || "-"}</td>
                                                 <td>{risk.residual_risk_consequence_schedule || "-"}</td>
-                                                <td>{risk.residual_risk_consequence_scope || "-"}</td>
+                                                <td>{risk.residual_risk_consequence_scope || "-"}</td> */}
                                                 <td>{risk.comment || "-"}</td>
                                                 <td>{risk.created_at || "-"}</td>
                                                 <td>{risk.risk_owner_name || "-"}</td>

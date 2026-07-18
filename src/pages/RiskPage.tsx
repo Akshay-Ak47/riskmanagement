@@ -224,293 +224,259 @@ function RiskPage() {
 
             <h1>Risk Register</h1>
 
-            {/* SECTION 1 */}
-
-            <div className="section-card">
-
-                <h2>Risk Assignment</h2>
-
-                <div className="grid-container">
-
-                    <input
-                        value="[AUTO GENERATED ISSUE KEY]"
-                        disabled
-                    />
-
-                    <textarea
-                        name="summary"
-                        placeholder="Summary"
-                        value={risk.summary}
-                        onChange={handleChange}
-                    />
-
-                    <select
-                        name="status"
-                        value={risk.status}
-                        onChange={handleChange}
-                    >
-
-                        {statusOptions.map(status => (
-
-                            <option
-                                key={status}
-                                value={status}
-                            >
-                                {status || "Select Status"}
-                            </option>
-                        ))}
-
-                    </select>
-
-                    <select
-                        name="risk_group"
-                        value={risk.risk_group}
-                        onChange={handleChange}
-                    >
-
-                        {groupOptions.map(group => (
-
-                            <option
-                                key={group}
-                                value={group}
-                            >
-                                {group || "Select Group"}
-                            </option>
-                        ))}
-
-                    </select>
-
-                    <div className="wbs-upload-row">
-
-                        <input
-                            name="wbs_element"
-                            placeholder="WBS Element"
-                            value={risk.wbs_element}
-                            onChange={handleChange}
-                        />
-
-                      <button
-    type="button"
-    onClick={handleFileChange}
->
-    Select Attachment
-</button>
-
-                    </div>
-
-                  <div className="field-card">
-
-                      <label>Description</label>
-
-                      <p className="field-info">
-                          Write risk in "IF, THEN" statement format.
-                      </p>
-
-                      <textarea
-                          className="small-textarea"
-                          name="description"
-                          placeholder="Enter Description"
-                          value={risk.description}
-                          onChange={handleChange}
-                      />
-
-                  </div>
-
-                    <select
-                        name="risk_probability"
-                        value={risk.risk_probability}
-                        onChange={handleChange}
-                    >
-
-                        <option value="">
-                            Select Probability
-                        </option>
-
-                        {probabilityOptions.map(option => (
-
-                            <option
-                                key={option}
-                                value={option}
-                            >
-                                {option}
-                            </option>
-                        ))}
+           {/* SECTION 1 */}
+
+<div className="section-card">
+
+    <h2>
+        Risk Assignment
+    </h2>
+
+    <div className="grid-container">
+
+    <input
+        value="[AUTO GENERATED ISSUE KEY]"
+        disabled
+    />
+
+    <select
+        name="status"
+        value={risk.status}
+        onChange={handleChange}
+    >
+        {statusOptions.map(status => (
+            <option
+                key={status}
+                value={status}
+            >
+                {status || "Select Status"}
+            </option>
+        ))}
+    </select>
+
+    <select
+        name="risk_group"
+        value={risk.risk_group}
+        onChange={handleChange}
+    >
+        {groupOptions.map(group => (
+            <option
+                key={group}
+                value={group}
+            >
+                {group || "Select Group"}
+            </option>
+        ))}
+    </select>
+
+    <input
+        name="wbs_element"
+        placeholder="WBS Element"
+        value={risk.wbs_element}
+        onChange={handleChange}
+    />
+    <div className="upload-card">
+
+        <button
+            type="button"
+            onClick={handleFileChange}
+        >
+            Attach Document to wbs Element
+        </button>
+
+    </div>
+
+    <select
+        name="risk_probability"
+        value={risk.risk_probability}
+        onChange={handleChange}
+    >
+        <option value="">
+            Select Probability
+        </option>
+
+        {probabilityOptions.map(option => (
+            <option
+                key={option}
+                value={option}
+            >
+                {option}
+            </option>
+        ))}
+    </select>
+
+    <select
+        name="risk_consequence"
+        value={risk.risk_consequence}
+        onChange={handleChange}
+    >
+        <option value="">
+            Select Consequence
+        </option>
+
+        {consequenceOptions.map(option => (
+            <option
+                key={option}
+                value={option}
+            >
+                {option}
+            </option>
+        ))}
+    </select>
+
+    <select
+        name="greatest_risk_consequence"
+        value={risk.greatest_risk_consequence}
+        onChange={handleChange}
+    >
+        <option value="">
+            Select Type
+        </option>
+
+        {greatestConsequenceOptions.map(option => (
+            <option
+                key={option}
+                value={option}
+            >
+                {option}
+            </option>
+        ))}
+    </select>
+
+    <select
+        name="residual_risk_probability"
+        value={risk.residual_risk_probability}
+        onChange={handleChange}
+    >
+        <option value="">
+            Select Residual Probability
+        </option>
+
+        {probabilityOptions.map(option => (
+            <option
+                key={option}
+                value={option}
+            >
+                {option}
+            </option>
+        ))}
+    </select>
+
+    <select
+        name="residual_risk_consequence"
+        value={risk.residual_risk_consequence}
+        onChange={handleChange}
+    >
+        <option value="">
+            Select Residual Consequence
+        </option>
+
+        {consequenceOptions.map(option => (
+            <option
+                key={option}
+                value={option}
+            >
+                {option}
+            </option>
+        ))}
+    </select>
+
+    
+
+    <textarea
+        name="summary"
+        placeholder="Summary"
+        value={risk.summary}
+        onChange={handleChange}
+    />
+
+    <textarea
+        name="risk_justification"
+        placeholder="Risk Justification"
+        value={risk.risk_justification}
+        onChange={handleChange}
+    />
+
+    <textarea
+        name="residual_risk_justification"
+        placeholder="Residual Risk Justification"
+        value={risk.residual_risk_justification}
+        onChange={handleChange}
+    />
+
+    <div className="field-card">
+
+        <label>Description</label>
+
+        <p className="field-info">
+            Write risk in "IF, THEN" statement format.
+        </p>
+
+        <textarea
+            className="small-textarea"
+            name="description"
+            value={risk.description}
+            onChange={handleChange}
+        />
+
+    </div>
+
+    <div className="field-card">
+
+        <label>Risk Response Actions</label>
+
+        <p className="field-info">
+            Use:
+            [Potential],
+            [Planned],
+            [In Progress],
+            [Executed]
+        </p>
+
+        <textarea
+            className="small-textarea"
+            name="risk_response_actions"
+            value={risk.risk_response_actions}
+            onChange={handleChange}
+        />
+
+    </div>
+
+    <div className="field-card">
+
+        <label>Risk Response Strategy</label>
+
+        <select
+            name="risk_response_strategy"
+            value={risk.risk_response_strategy}
+            onChange={handleChange}
+        >
+            <option value="">
+                Select Strategy
+            </option>
+
+            {strategyOptions.map(strategy => (
+                <option
+                    key={strategy.value}
+                    value={strategy.value}
+                >
+                    {strategy.value}
+                </option>
+            ))}
+        </select>
+
+        {selectedStrategy && (
+            <p className="field-info">
+                {selectedStrategy.description}
+            </p>
+        )}
+
+    </div>
+
+</div>
+    </div> {/* grid-container */}
 
-                    </select>
-
-                    <select
-                        name="risk_consequence"
-                        value={risk.risk_consequence}
-                        onChange={handleChange}
-                    >
-
-                        <option value="">
-                            Select Consequence
-                        </option>
-
-                        {consequenceOptions.map(option => (
-
-                            <option
-                                key={option}
-                                value={option}
-                            >
-                                {option}
-                            </option>
-                        ))}
-
-                    </select>
-
-                    <select
-                        name="greatest_risk_consequence"
-                        value={
-                            risk.greatest_risk_consequence
-                        }
-                        onChange={handleChange}
-                    >
-
-                        <option value="">
-                            Select Type
-                        </option>
-
-                        {greatestConsequenceOptions.map(option => (
-
-                            <option
-                                key={option}
-                                value={option}
-                            >
-                                {option}
-                            </option>
-                        ))}
-
-                    </select>
-
-                    <textarea
-                        name="risk_justification"
-                        placeholder="Risk Justification"
-                        value={risk.risk_justification}
-                        onChange={handleChange}
-                    />
-
-                    <div>
-
-                        <select
-                            name="risk_response_strategy"
-                            value={
-                                risk.risk_response_strategy
-                            }
-                            onChange={handleChange}
-                        >
-
-                            <option value="">
-                                Select Strategy
-                            </option>
-
-                            {strategyOptions.map(strategy => (
-
-                                <option
-                                    key={strategy.value}
-                                    value={strategy.value}
-                                >
-                                    {strategy.value}
-                                </option>
-                            ))}
-
-                        </select>
-
-                        {selectedStrategy && (
-
-                            <p className="field-info">
-
-                                {
-                                    selectedStrategy.description
-                                }
-
-                            </p>
-                        )}
-
-                    </div>
-
-                   <div className="field-card">
-
-                       <label>Risk Response Actions</label>
-
-                       <p className="field-info">
-                           Use:
-                           [Potential],
-                           [Planned],
-                           [In Progress],
-                           [Executed]
-                       </p>
-
-                       <textarea
-                           className="small-textarea"
-                           name="risk_response_actions"
-                           placeholder="Enter Risk Response Actions"
-                           value={risk.risk_response_actions}
-                           onChange={handleChange}
-                       />
-
-                   </div>
-
-                    <select
-                        name="residual_risk_probability"
-                        value={
-                            risk.residual_risk_probability
-                        }
-                        onChange={handleChange}
-                    >
-
-                        <option value="">
-                            Select Residual Probability
-                        </option>
-
-                        {probabilityOptions.map(option => (
-
-                            <option
-                                key={option}
-                                value={option}
-                            >
-                                {option}
-                            </option>
-                        ))}
-
-                    </select>
-
-                    <select
-                        name="residual_risk_consequence"
-                        value={
-                            risk.residual_risk_consequence
-                        }
-                        onChange={handleChange}
-                    >
-
-                        <option value="">
-                            Select Residual Consequence
-                        </option>
-
-                        {consequenceOptions.map(option => (
-
-                            <option
-                                key={option}
-                                value={option}
-                            >
-                                {option}
-                            </option>
-                        ))}
-
-                    </select>
-
-                    <textarea
-                        name="residual_risk_justification"
-                        placeholder="Residual Risk Justification"
-                        value={
-                            risk.residual_risk_justification
-                        }
-                        onChange={handleChange}
-                    />
-
-                </div>
-            </div>
+
 
             {/* SECTION 2 */}
 

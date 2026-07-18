@@ -68,11 +68,25 @@ function ViewPageHelper() {
 
        <div className="view-container">
 
+    <div className="page-header">
+
+    <button
+        className="back-btn"
+        onClick={() => navigate(-1)}
+    >
+        ← Back
+    </button>
+
     <h1>
-        Risk Details & Version History
+        Risk Details & Version details
     </h1>
 
+</div>
+
+    <div className="table-wrapper">
+
     <table className="risk-table">
+        
 
         <thead>
 
@@ -240,17 +254,20 @@ function ViewPageHelper() {
 
             ))}
 
-        </tbody>
+       </tbody>
 
-    </table>
+</table>
 
-    {versions.length === 0 && (
+</div>
+
+{versions.length === 0 && (
 
         <div className="empty-message">
 
             No versions available for this risk.
 
         </div>
+        
 
     )}
 

@@ -130,13 +130,24 @@ return (
     <div className="page-container">
 
         <div className="risk-card">
+            <div className="title-bar">
 
-            <div className="risk-title">
-                {isVersion
-                    ? "Risk Version Details"
-                    : "Risk Details"}
-            </div>
+    <button
+        className="back-btn"
+        onClick={() => navigate(-1)}
+    >
+        ← Back
+    </button>
 
+    <div className="risk-title">
+        {
+            isVersion
+                ? "Risk Version Details"
+                : "Risk Details"
+        }
+    </div>
+
+</div>
             <div className="info-grid">
 
                 {

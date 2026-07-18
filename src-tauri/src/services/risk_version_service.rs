@@ -1,5 +1,5 @@
 use rusqlite::Connection;
-
+use crate::services::file_service;
 use crate::repositories::risk_version_repository;
 
 use crate::models::risk_model::Risk;
@@ -45,7 +45,7 @@ pub fn build_version_key(
 
 pub fn create_risk_version(
     conn: &Connection,
-    risk: Risk
+    mut risk: Risk
 ) -> Result<(), String> {
 
    let key =
@@ -90,6 +90,30 @@ pub fn create_risk_version(
             &parent_issue_key,
             version_no
         );
+
+        println!(
+            "ATTACHMENT PATH FROM REACT = {:?}",
+            risk.attached_document_path
+        );
+
+        if let Some(path) =
+            &risk.attached_document_path {
+
+            if !path.is_empty()
+                && !path.starts_with(
+                    "C:\\RiskRegisterData\\Attachments"
+                )
+            {
+
+                let copied_path =
+                    file_service::copy_attachment(
+                        path
+                    )?;
+
+                risk.attached_document_path =
+                    Some(copied_path);
+            }
+        }
 
     let risk_version =
         RiskVersionModel {

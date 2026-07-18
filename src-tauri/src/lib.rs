@@ -3,7 +3,7 @@ mod commands;
 mod models;
 mod services;
 mod repositories;
-
+use tauri::Manager;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -30,18 +30,31 @@ pub fn run() {
 
       .setup(|app| {
 
-        database::init::initialize_database(app);
+          database::init::initialize_database(app);
 
-        if cfg!(debug_assertions) {
+          let app_data_dir = app
+              .path()
+              .app_data_dir()
+              .expect("Failed to get app data directory");
 
-          app.handle().plugin(
-            tauri_plugin_log::Builder::default()
-              .level(log::LevelFilter::Info)
-              .build(),
-          )?;
-        }
+          let db_path = app_data_dir.join("risk_register_db.db");
 
-        Ok(())
+          println!("======================================");
+          println!("Risk Register Application Started");
+          println!("App Data Directory : {}", app_data_dir.display());
+          println!("Database Path      : {}", db_path.display());
+          println!("======================================");
+
+          if cfg!(debug_assertions) {
+
+              app.handle().plugin(
+                  tauri_plugin_log::Builder::default()
+                      .level(log::LevelFilter::Info)
+                      .build(),
+              )?;
+          }
+
+          Ok(())
       })
 
       .run(tauri::generate_context!())

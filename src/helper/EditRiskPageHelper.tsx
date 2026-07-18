@@ -8,6 +8,7 @@ import "./../styles/RiskPage.css";
 import type { RiskViewState } from "../types/riskView";
 import {getEditableRisk,createRiskVersion, handleOperationResult } from "../services/riskService";
 import { useNavigate } from "react-router-dom";
+import { open } from "@tauri-apps/plugin-dialog";
 
 
 
@@ -249,6 +250,41 @@ useEffect(() => {
 }, [issueKey]);
 
 
+const handleFileChange = async () => {
+
+    const filePath =
+        await open({
+            multiple: false,
+            filters: [
+                {
+                    name: "Attachments",
+                    extensions: [
+                        "pdf",
+                        "jpg",
+                        "jpeg",
+                        "png"
+                    ]
+                }
+            ]
+        });
+
+    console.log(
+        "SELECTED PATH =",
+        filePath
+    );
+
+    if (!filePath) {
+        return;
+    }
+
+    setRisk({
+        ...risk,
+        attached_document_path:
+            String(filePath)
+    });
+};
+
+
 const createRisk = async () => {
    
     try {
@@ -365,9 +401,12 @@ if (success) {
                                    onChange={handleChange}
                                />
 
-                               <input
-                                   type="file"
-                               />
+                               <button
+    type="button"
+    onClick={handleFileChange}
+>
+    Select Attachment
+</button>
 
                            </div>
 
