@@ -3,6 +3,9 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ActionButton, Card, PageContainer, PageHeader } from "../components/ui";
 import { createRiskVersion, getEditableRisk, handleOperationResult } from "../services/riskService";
 import type { RiskViewState } from "../types/riskView";
+import { open } from "@tauri-apps/plugin-dialog";
+import FieldHelp from "../components/FieldHelp";
+import { fieldHelp } from "../config/fieldHelp";
 
 const probabilityOptions = ["Almost None", "Low", "Medium", "High", "Very High"];
 const consequenceOptions = ["Trivial", "Low", "Medium", "High", "Severe"];
@@ -53,6 +56,8 @@ function EditRiskPageHelper() {
   const navigate = useNavigate();
   const { issueKey } = useParams();
   const [risk, setRisk] = useState<RiskViewState>(initialRiskState);
+  const [isStatusOpen, setIsStatusOpen] = useState(false);
+
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -62,9 +67,7 @@ function EditRiskPageHelper() {
     }));
   };
 
-  const resetRiskForm = () => {
-    setRisk(initialRiskState);
-  };
+  const resetRiskForm = () => { setRisk(initialRiskState); };
 
   const selectedStrategy = strategyOptions.find((strategy) => strategy.value === risk.risk_response_strategy);
 
@@ -77,6 +80,32 @@ function EditRiskPageHelper() {
     setRisk(response as RiskViewState);
   };
 
+  const handleFileChange = async () => {
+    const filePath = await open({
+        multiple: false,
+        filters: [
+            {
+                name: "Attachments",
+                extensions: [
+                    "pdf",
+                    "jpg",
+                    "jpeg",
+                    "png"
+                ]
+            }
+        ]
+    });
+
+    if (!filePath) {
+        return;
+    }
+
+    setRisk(prev => ({
+        ...prev,
+        attached_document_path: String(filePath)
+    }));
+};
+
   useEffect(() => {
     void loadRisk();
   }, [issueKey]);
@@ -84,9 +113,13 @@ function EditRiskPageHelper() {
   const createRisk = async () => {
     try {
       const request = {
-        ...risk,
-        issue_key: risk.issue_key,
-      };
+
+    ...risk,
+
+    issue_key:
+        risk.parent_issue_key ??
+        risk.issue_key
+};
 
       const success = await handleOperationResult(
         () => createRiskVersion(request),
@@ -102,6 +135,8 @@ function EditRiskPageHelper() {
       console.error(error);
     }
   };
+   const [isOpen, setIsOpen] = useState(false);
+  const [isStrategyOpen, setIsStrategyOpen] = useState(false);
 
   return (
     <PageContainer>
@@ -116,19 +151,27 @@ function EditRiskPageHelper() {
         <div className="form-grid form-grid--wide">
           <label className="field-group">
             <span className="field-label">Issue key</span>
-            <input className="input" value={risk.issue_key || ""} disabled />
+            <input className="input" value={risk.version_key ?? risk.issue_key} disabled />
           </label>
           <label className="field-group">
             <span className="field-label">Summary</span>
             <textarea className="textarea" name="summary" placeholder="Summary" value={risk.summary} onChange={handleChange} />
           </label>
           <label className="field-group">
-            <span className="field-label">Status</span>
-            <select className="select" name="status" value={risk.status} onChange={handleChange}>
+            <span className="field-label">Status <FieldHelp field="status" isOpen={isStatusOpen} setIsOpen={setIsStatusOpen} /></span>
+            <select className="select" name="status" value={risk.status} onChange={handleChange} onMouseEnter={() => setIsStatusOpen(true)} onMouseLeave={() => setIsStatusOpen(false)}>
               {statusOptions.map((status) => (
                 <option key={status} value={status}>{status || "Select status"}</option>
               ))}
             </select>
+            <div className="selected-help"
+            onMouseEnter={() => setIsOpen(true)}
+  onMouseLeave={() => setIsOpen(false)}>
+  <div className="selected-help__title">{risk.status}</div>
+  <div className="selected-help__text">
+    {fieldHelp.status.options.find(option => option.value === risk.status)?.description}
+  </div>
+</div>
           </label>
           <label className="field-group">
             <span className="field-label">Risk group</span>
@@ -142,6 +185,24 @@ function EditRiskPageHelper() {
             <span className="field-label">WBS element</span>
             <input className="input" name="wbs_element" placeholder="WBS Element" value={risk.wbs_element} onChange={handleChange} />
           </label>
+          <div className="field-group">
+    <span className="field-label">
+        Attachment
+    </span>
+
+    <button
+        type="button"
+        onClick={handleFileChange}
+    >
+        Select Attachment
+    </button>
+
+    {risk.attached_document_path && (
+        <small>
+            {risk.attached_document_path}
+        </small>
+    )}
+</div>
           <div className="field-group">
             <span className="field-label">Description</span>
             <p className="field-help">Capture the risk in a clear IF / THEN style statement.</p>
@@ -179,8 +240,8 @@ function EditRiskPageHelper() {
             <textarea className="textarea" name="risk_justification" placeholder="Risk justification" value={risk.risk_justification} onChange={handleChange} />
           </label>
           <div className="field-group">
-            <span className="field-label">Response strategy</span>
-            <select className="select" name="risk_response_strategy" value={risk.risk_response_strategy} onChange={handleChange}>
+            <span className="field-label">Response strategy <FieldHelp field="riskResponseStrategy" isOpen={isStrategyOpen} setIsOpen={setIsStrategyOpen} /></span>
+            <select className="select" name="risk_response_strategy" value={risk.risk_response_strategy} onChange={handleChange} onMouseEnter={() => setIsStrategyOpen(true)} onMouseLeave={() => setIsStrategyOpen(false)}>
               <option value="">Select strategy</option>
               {strategyOptions.map((strategy) => (
                 <option key={strategy.value} value={strategy.value}>{strategy.value}</option>

@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { invoke } from "@tauri-apps/api/core";
 import Swal from "sweetalert2";
-import { openDocument } from "../services/riskService";
+//import { openDocument } from "../services/riskService";
 import type { RiskViewState } from "../types/riskView";
 import { ActionButton, Card, DataTable, EmptyState, PageContainer, PageHeader, StatusBadge } from "../components/ui";
 
@@ -70,6 +70,8 @@ function HelperHome1() {
     }
   };
 
+  
+
   useEffect(() => {
     void loadRisks();
   }, []);
@@ -133,9 +135,9 @@ function HelperHome1() {
                 <td>{risk.risk_consequence || "-"}</td>
                 <td>
                   <div className="u-flex u-gap-2 u-wrap">
-                    <button type="button" className="text-link" onClick={() => risk.attached_document_path && openDocument(risk.attached_document_path)}>
+                    {/* <button type="button" className="text-link" onClick={() => risk.attached_document_path && openDocument(risk.attached_document_path)}>
                       {risk.attached_document_path ? "Document" : "No doc"}
-                    </button>
+                    </button> */}
                     <ActionButton variant="secondary" onClick={() => navigate(`/edit/${risk.issue_key}`)}>Edit</ActionButton>
                     <ActionButton variant="danger" onClick={() => deleteRisk(risk.issue_key)}>Delete</ActionButton>
                   </div>

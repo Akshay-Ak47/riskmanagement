@@ -20,6 +20,10 @@ export type RiskState = {
     risk_consequence_cost: string;
     risk_schedule_start: string;
     risk_schedule_end: string;
+    scheduled_date: string;
+    actual_days: number | null;
+    taken_days: number | null;
+    schedule_percentage: number | null;
     risk_consequence_schedule: string;
     residual_risk_consequence_cost: string;
     residual_risk_consequence_schedule: string;

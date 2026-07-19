@@ -5,6 +5,9 @@ import { open } from "@tauri-apps/plugin-dialog";
 import type { RiskState } from "../types/risk";
 import { showMessage } from "../utils/alertUtils";
 import { ActionButton, Card, PageContainer, PageHeader } from "../components/ui";
+import FieldHelp from "../components/FieldHelp";
+import { fieldHelp } from "../config/fieldHelp";
+import { getCostConsequence, getSchedulePercentage, getScheduleConsequence,getRiskScope, } from "../utils/riskRules";
 
 const probabilityOptions = ["Almost None", "Low", "Medium", "High", "Very High"];
 const consequenceOptions = ["Trivial", "Low", "Medium", "High", "Severe"];
@@ -40,6 +43,11 @@ const initialRiskState: RiskState = {
   risk_consequence_cost: "",
   risk_schedule_start: "",
   risk_schedule_end: "",
+  scheduled_date: "",
+
+actual_days: null,
+taken_days: null,
+schedule_percentage: null,
   risk_consequence_schedule: "",
   residual_risk_consequence_cost: "",
   residual_risk_consequence_schedule: "",
@@ -55,13 +63,75 @@ function RiskPage() {
   const resetForm = () => setRisk(initialRiskState);
   const selectedStrategy = strategyOptions.find((strategy) => strategy.value === risk.risk_response_strategy);
 
+//   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+//   const { name, value } = e.target;
+
+//   if (name === "risk_cost") {
+//     const cost = value === "" ? null : Number(value);
+//     return setRisk({ ...risk, risk_cost: cost, risk_consequence_cost: cost === null ? "" : getCostConsequence(cost) });
+//   }
+
+//   setRisk({ ...risk, [name]: value });
+// };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setRisk({
-      ...risk,
-      [name]: name === "risk_cost" ? (value === "" ? null : Number(value)) : value,
-    });
-  };
+  const { name, value } = e.target;
+
+  if (name === "risk_cost") {
+  const cost = value === "" ? null : Number(value);
+  const consequenceCost = cost === null ? "" : getCostConsequence(cost);
+
+  return setRisk({
+    ...risk,
+    risk_cost: cost,
+    risk_consequence_cost: consequenceCost,
+    risk_scope: getRiskScope(consequenceCost, risk.risk_consequence_schedule),
+  });
+}
+
+  const updatedRisk = { ...risk, [name]: value };
+  if (
+  updatedRisk.risk_schedule_start &&
+  updatedRisk.scheduled_date &&
+  new Date(updatedRisk.scheduled_date) < new Date(updatedRisk.risk_schedule_start)
+) {
+  showMessage(
+    "error",
+    "Invalid Date",
+    "Scheduled Date cannot be earlier than Schedule Start."
+  );
+
+  updatedRisk.taken_days = null;
+  updatedRisk.actual_days = null;
+  updatedRisk.schedule_percentage = null;
+
+  return setRisk(updatedRisk);
+}
+
+  if (
+    name === "risk_schedule_start" ||
+    name === "scheduled_date" ||
+    name === "risk_schedule_end"
+  ) {
+    const { takenDays, actualDays, percentage } = getSchedulePercentage(
+      updatedRisk.risk_schedule_start,
+      updatedRisk.scheduled_date,
+      updatedRisk.risk_schedule_end
+    );
+
+    updatedRisk.taken_days = takenDays;
+    updatedRisk.actual_days = actualDays;
+    updatedRisk.schedule_percentage = percentage;
+    updatedRisk.risk_consequence_schedule = percentage === null ? "" : getScheduleConsequence(percentage);
+    updatedRisk.risk_scope = getRiskScope(updatedRisk.risk_consequence_cost, updatedRisk.risk_consequence_schedule);
+    updatedRisk.risk_scope = getRiskScope(
+  updatedRisk.risk_consequence_cost,
+  updatedRisk.risk_consequence_schedule
+);
+  }
+
+  setRisk(updatedRisk);
+};
 
   const createRisk = async () => {
     try {
@@ -86,6 +156,14 @@ function RiskPage() {
     setRisk({ ...risk, attached_document_path: String(filePath) });
   };
 
+  
+
+  const [isOpen, setIsOpen] = useState(false);
+  const [isStrategyOpen, setIsStrategyOpen] = useState(false);
+  const [isRiskCostOpen, setIsRiskCostOpen] = useState(false);
+ const [isScheduleConsequenceOpen, setIsScheduleConsequenceOpen] = useState(false);
+ const [isRiskScopeOpen, setIsRiskScopeOpen] = useState(false);
+
   return (
     <PageContainer>
       <PageHeader
@@ -105,12 +183,20 @@ function RiskPage() {
             <textarea className="textarea" name="summary" placeholder="Summary" value={risk.summary} onChange={handleChange} />
           </label>
           <label className="field-group">
-            <span className="field-label">Status</span>
-            <select className="select" name="status" value={risk.status} onChange={handleChange}>
+            <span className="field-label"> Status <FieldHelp field="status" isOpen={isOpen} setIsOpen={setIsOpen} /></span>
+            <select className="select" name="status" value={risk.status} onChange={handleChange} onMouseEnter={() => setIsOpen(true)} onMouseLeave={() => setIsOpen(false)}>
               {statusOptions.map((status) => (
                 <option key={status} value={status}>{status || "Select Status"}</option>
               ))}
             </select>
+          <div className="selected-help"
+            onMouseEnter={() => setIsOpen(true)}
+  onMouseLeave={() => setIsOpen(false)}>
+  <div className="selected-help__title">{risk.status}</div>
+  <div className="selected-help__text">
+    {fieldHelp.status.options.find(option => option.value === risk.status)?.description}
+  </div>
+</div>
           </label>
           <label className="field-group">
             <span className="field-label">Risk group</span>
@@ -159,12 +245,9 @@ function RiskPage() {
               ))}
             </select>
           </label>
-          <label className="field-group">
-            <span className="field-label">Risk justification</span>
-            <textarea className="textarea" name="risk_justification" placeholder="Risk Justification" value={risk.risk_justification} onChange={handleChange} />
-          </label>
+        
           <div className="field-group">
-            <span className="field-label">Response strategy</span>
+            <span className="field-label">Response strategy <FieldHelp field="riskResponseStrategy" isOpen={isStrategyOpen} setIsOpen={setIsStrategyOpen} /></span>
             <select className="select" name="risk_response_strategy" value={risk.risk_response_strategy} onChange={handleChange}>
               <option value="">Select Strategy</option>
               {strategyOptions.map((strategy) => (
@@ -206,7 +289,7 @@ function RiskPage() {
       <Card title="Risk details" description="Supplementary context for scope, cost, timing, and residual conditions.">
         <div className="form-grid form-grid--wide">
           <label className="field-group">
-            <span className="field-label">Risk scope</span>
+            <span className="field-label">Risk scope <FieldHelp field="riskScope" isOpen={isRiskScopeOpen} setIsOpen={setIsRiskScopeOpen} /></span>
             <input className="input" value={risk.risk_scope} disabled />
           </label>
           <label className="field-group">
@@ -219,8 +302,8 @@ function RiskPage() {
             </select>
           </label>
           <label className="field-group">
-            <span className="field-label">Risk cost</span>
-            <input className="input" type="number" name="risk_cost" placeholder="Risk Cost (INR)" value={risk.risk_cost ?? ""} onChange={handleChange} />
+            <span className="field-label">Risk Cost (USD) <FieldHelp field="riskCost" isOpen={isRiskCostOpen} setIsOpen={setIsRiskCostOpen} /></span>
+            <input className="input" type="number" name="risk_cost" placeholder="Risk Cost (USD)" value={risk.risk_cost ?? ""} onChange={handleChange} />
           </label>
           <label className="field-group">
             <span className="field-label">Consequence cost</span>
@@ -230,12 +313,24 @@ function RiskPage() {
             <span className="field-label">Schedule start</span>
             <input className="input" type="date" name="risk_schedule_start" value={risk.risk_schedule_start} onChange={handleChange} />
           </label>
+           <label className="field-group">
+  <span className="field-label">Scheduled Date</span>
+  <input className="input" type="date" name="scheduled_date" value={risk.scheduled_date} onChange={handleChange} />
+</label>
           <label className="field-group">
             <span className="field-label">Schedule end</span>
             <input className="input" type="date" name="risk_schedule_end" value={risk.risk_schedule_end} onChange={handleChange} />
           </label>
           <label className="field-group">
-            <span className="field-label">Consequence schedule</span>
+  <span className="field-label">Schedule Percentage</span>
+  <input
+    className="input"
+    value={risk.schedule_percentage ?? ""}
+    disabled
+  />
+</label>
+          <label className="field-group">
+            <span className="field-label">Consequence Schedule <FieldHelp field="schedulePercentage" isOpen={isScheduleConsequenceOpen} setIsOpen={setIsScheduleConsequenceOpen} /></span>
             <input className="input" value={risk.risk_consequence_schedule} disabled />
           </label>
         </div>
@@ -269,6 +364,10 @@ function RiskPage() {
                 <option key={option} value={option}>{option}</option>
               ))}
             </select>
+          </label>
+            <label className="field-group">
+            <span className="field-label">Risk justification</span>
+            <textarea className="textarea" name="risk_justification" placeholder="Risk Justification" value={risk.risk_justification} onChange={handleChange} />
           </label>
         </div>
       </Card>

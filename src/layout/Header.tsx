@@ -9,14 +9,18 @@ type HeaderProps = {
 function Header({ toggleSidebar, isOpen }: HeaderProps) {
   const appWindow = getCurrentWindow();
 
-  useEffect(() => {
-    void appWindow.setResizable(false);
-    void appWindow.setMaximizable(false);
-  }, [appWindow]);
+ useEffect(() => {
+  void appWindow.setResizable(true);
+  void appWindow.setMaximizable(true);
+}, [appWindow]);
 
   const minimizeWindow = async () => {
     await appWindow.minimize();
   };
+  
+  const toggleMaximizeWindow = async () => {
+  await appWindow.toggleMaximize();
+};
 
   const closeWindow = async () => {
     await appWindow.close();
@@ -38,7 +42,8 @@ function Header({ toggleSidebar, isOpen }: HeaderProps) {
         <button className="window-control window-control--minimize" type="button" onClick={minimizeWindow} aria-label="Minimize window">
           −
         </button>
-        <button className="window-control window-control--maximize" type="button" aria-label="Maximize disabled" disabled>
+        <button className="window-control window-control--maximize" type="button"  onClick={toggleMaximizeWindow}
+  aria-label="Maximize window">
           □
         </button>
         <button className="window-control window-control--close" type="button" onClick={closeWindow} aria-label="Close window">

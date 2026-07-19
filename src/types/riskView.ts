@@ -1,5 +1,8 @@
 export type RiskViewState = {
     issue_key: string;
+    version_key?: string | null;
+parent_issue_key?: string | null;
+version_no?: number | null;
     summary: string;
     status: string;
     risk_group: string;
