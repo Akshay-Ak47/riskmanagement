@@ -8,6 +8,8 @@ import { ActionButton, Card, DataTable, EmptyState, PageContainer, PageHeader, S
 
 function HelperHome1() {
   const [risks, setRisks] = useState<RiskViewState[]>([]);
+  const [selectedStrategy, setSelectedStrategy] = useState("All");
+  const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
 
   const loadRisks = async () => {
@@ -76,18 +78,65 @@ function HelperHome1() {
     void loadRisks();
   }, []);
 
-  const summaryStats = useMemo(() => {
-    const activeCount = risks.filter((item) => item.status === "Active").length;
-    const newCount = risks.filter((item) => item.status === "New").length;
-    const highRiskCount = risks.filter((item) => item.risk_probability === "High" || item.risk_probability === "Very High").length;
+ // 1
+const strategyOptions = useMemo(() => {
+  const strategies = Array.from(
+    new Set(
+      risks
+        .map((r) => r.risk_response_strategy)
+        .filter((s) => s && s.trim() !== "")
+    )
+  );
 
-    return [
-      { label: "Total Risks", value: risks.length },
-      { label: "Active", value: activeCount },
-      { label: "New", value: newCount },
-      { label: "High Exposure", value: highRiskCount },
-    ];
-  }, [risks]);
+  return ["All", ...strategies];
+}, [risks]);
+
+// 2
+const filteredRisks = useMemo(() => {
+  return risks.filter((risk) => {
+    const matchesStrategy =
+      selectedStrategy === "All" ||
+      risk.risk_response_strategy === selectedStrategy;
+
+    const query = searchTerm.toLowerCase();
+
+    const matchesSearch =
+      risk.issue_key?.toLowerCase().includes(query) ||
+      risk.summary?.toLowerCase().includes(query) ||
+      risk.status?.toLowerCase().includes(query) ||
+      risk.risk_group?.toLowerCase().includes(query) ||
+      risk.risk_owner_name?.toLowerCase().includes(query) ||
+      risk.risk_probability?.toLowerCase().includes(query) ||
+      risk.risk_consequence?.toLowerCase().includes(query) ||
+      risk.risk_response_strategy?.toLowerCase().includes(query);
+
+    return matchesStrategy && matchesSearch;
+  });
+}, [risks, selectedStrategy, searchTerm]);
+
+// 3
+const summaryStats = useMemo(() => {
+  const activeCount = filteredRisks.filter(
+    (item) => item.status === "Active"
+  ).length;
+
+  const newCount = filteredRisks.filter(
+    (item) => item.status === "New"
+  ).length;
+
+  const highRiskCount = filteredRisks.filter(
+    (item) =>
+      item.risk_probability === "High" ||
+      item.risk_probability === "Very High"
+  ).length;
+
+  return [
+    { label: "Total Risks", value: filteredRisks.length },
+    { label: "Active", value: activeCount },
+    { label: "New", value: newCount },
+    { label: "High Exposure", value: highRiskCount },
+  ];
+}, [filteredRisks]);
 
   const getStatusTone = (status: string) => {
     if (status === "Active") return "success";
@@ -103,6 +152,38 @@ function HelperHome1() {
         description="A focused view of active risks, owners, and next actions for the current program."
         actions={<ActionButton variant="primary" onClick={() => navigate("/risk")}>Create new risk</ActionButton>}
       />
+      <div className="page-toolbar">
+
+    <input
+        type="text"
+        placeholder="Search by ID, Summary, Owner..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        className="search-input"
+    />
+
+    <div className="filter-group">
+
+        <label htmlFor="strategyFilter">
+            Filter by Strategy
+        </label>
+
+        <select
+            id="strategyFilter"
+            value={selectedStrategy}
+            onChange={(e) => setSelectedStrategy(e.target.value)}
+            className="filter-select"
+        >
+            {strategyOptions.map((strategy) => (
+                <option key={strategy} value={strategy}>
+                    {strategy}
+                </option>
+            ))}
+        </select>
+
+    </div>
+
+</div>
 
       <div className="summary-grid">
         {summaryStats.map((item) => (
@@ -113,12 +194,12 @@ function HelperHome1() {
         ))}
       </div>
 
-      {risks.length === 0 ? (
+      {filteredRisks.length === 0 ? (
         <EmptyState title="No risks found" description="Create a new entry to start tracking your risk register." action={<ActionButton variant="primary" onClick={() => navigate("/risk")}>Add risk</ActionButton>} />
       ) : (
         <Card title="Current register" description="Review, edit, or remove risk items without changing the underlying workflow.">
           <DataTable headers={["Issue key", "Summary", "Status", "Group", "Owner", "Probability", "Consequence", "Actions"]}>
-            {risks.map((risk) => (
+            {filteredRisks.map((risk) => (
               <tr key={risk.issue_key}>
                 <td>
                   <button type="button" className="text-link" onClick={() => navigate(`/single/${risk.issue_key}`)}>

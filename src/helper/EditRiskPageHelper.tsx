@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ActionButton, Card, PageContainer, PageHeader } from "../components/ui";
 import { createRiskVersion, getEditableRisk, handleOperationResult } from "../services/riskService";
 import type { RiskViewState } from "../types/riskView";
+import type { RiskState } from "../types/risk";
 import { open } from "@tauri-apps/plugin-dialog";
 import FieldHelp from "../components/FieldHelp";
 import { fieldHelp } from "../config/fieldHelp";
@@ -111,31 +112,59 @@ function EditRiskPageHelper() {
   }, [issueKey]);
 
   const createRisk = async () => {
-    try {
-      const request = {
+  try {
+    const request: RiskState = {
+      summary: risk.summary,
+      status: risk.status,
+      risk_group: risk.risk_group,
+      wbs_element: risk.wbs_element,
+      attached_document_path: risk.attached_document_path,
+      description: risk.description,
+      risk_probability: risk.risk_probability,
+      risk_consequence: risk.risk_consequence,
+      greatest_risk_consequence: risk.greatest_risk_consequence,
+      risk_justification: risk.risk_justification,
+      risk_response_strategy: risk.risk_response_strategy,
+      risk_response_actions: risk.risk_response_actions,
+      residual_risk_probability: risk.residual_risk_probability,
+      residual_risk_consequence: risk.residual_risk_consequence,
+      residual_risk_justification: risk.residual_risk_justification,
+      risk_scope: risk.risk_scope,
+      risk_consequence_scope: risk.risk_consequence_scope,
+      risk_cost: risk.risk_cost,
+      risk_consequence_cost: risk.risk_consequence_cost,
+      risk_schedule_start: risk.risk_schedule_start,
+      risk_schedule_end: risk.risk_schedule_end,
 
-    ...risk,
+      // Required by RiskState
+      scheduled_date: "",
+      actual_days: null,
+      taken_days: null,
+      schedule_percentage: null,
 
-    issue_key:
-        risk.parent_issue_key ??
-        risk.issue_key
-};
+      risk_consequence_schedule: risk.risk_consequence_schedule,
+      residual_risk_consequence_cost: risk.residual_risk_consequence_cost,
+      residual_risk_consequence_schedule: risk.residual_risk_consequence_schedule,
+      residual_risk_consequence_scope: risk.residual_risk_consequence_scope,
+      comment: risk.comment,
+      risk_owner_name: risk.risk_owner_name,
+      submitted_by: risk.submitted_by,
+    };
 
-      const success = await handleOperationResult(
-        () => createRiskVersion(request),
-        "Risk version created successfully",
-        "Failed to create risk version"
-      );
+    const success = await handleOperationResult(
+      () => createRiskVersion(request),
+      "Risk version created successfully",
+      "Failed to create risk version"
+    );
 
-      if (success) {
-        resetRiskForm();
-        navigate("/");
-      }
-    } catch (error) {
-      console.error(error);
+    if (success) {
+      resetRiskForm();
+      navigate("/");
     }
-  };
-   const [isOpen, setIsOpen] = useState(false);
+  } catch (error) {
+    console.error(error);
+  }
+};
   const [isStrategyOpen, setIsStrategyOpen] = useState(false);
 
   return (
@@ -164,9 +193,7 @@ function EditRiskPageHelper() {
                 <option key={status} value={status}>{status || "Select status"}</option>
               ))}
             </select>
-            <div className="selected-help"
-            onMouseEnter={() => setIsOpen(true)}
-  onMouseLeave={() => setIsOpen(false)}>
+            <div className="selected-help">
   <div className="selected-help__title">{risk.status}</div>
   <div className="selected-help__text">
     {fieldHelp.status.options.find(option => option.value === risk.status)?.description}
