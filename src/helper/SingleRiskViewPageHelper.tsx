@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getRiskByKey, getRiskVersionByKey, openDocument } from "../services/riskService";
 import type { RiskMerge } from "../types/riakMerg";
-import { Card, EmptyState, PageContainer, PageHeader, StatusBadge } from "../components/ui";
+import { ActionButton, Card, EmptyState, PageContainer, PageHeader, StatusBadge } from "../components/ui";
 
 function SingleRiskViewPageHelper() {
   const { issueKey } = useParams();
@@ -51,6 +51,12 @@ function SingleRiskViewPageHelper() {
   return (
     <PageContainer>
       <PageHeader title={isVersion ? "Risk version details" : "Risk details"} description="A structured view of the selected risk record and its key attributes." />
+      <ActionButton
+  variant="secondary"
+  onClick={() => navigate(-1)}
+>
+  ← Back
+</ActionButton>
       <Card title={isVersion ? "Version summary" : "Primary record"} description={isVersion ? "Version metadata and history context" : "Operational context for the selected risk"}>
         <div className="summary-grid">
           <div className="metric-card">

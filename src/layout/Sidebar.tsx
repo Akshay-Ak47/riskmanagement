@@ -10,7 +10,7 @@ const navItems = [
   { to: "/", label: "Overview", icon: "◉" },
   { to: "/risk", label: "New Risk", icon: "＋" },
   { to: "/history", label: "History", icon: "◌" },
-  { to: "/product", label: "Products", icon: "◍" },
+ 
 ];
 
 function Sidebar({ isOpen, isCollapsed, onNavigate }: SidebarProps) {

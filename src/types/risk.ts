@@ -1,4 +1,5 @@
 export type RiskState = {
+    issue_key?: string;
     summary: string;
     status: string;
     risk_group: string;

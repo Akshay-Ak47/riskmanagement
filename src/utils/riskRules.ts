@@ -88,6 +88,26 @@ export const scheduleConsequenceRules: NumericRangeRule<RiskConsequence>[] = [
   { lower: 50, upper: Infinity, value: "Severe" },
 ];
 
+export const getRiskScope = (cost: string, schedule: string) => {
+  const costSeverity = severityOrder.indexOf(cost);
+  const scheduleSeverity = severityOrder.indexOf(schedule);
 
-export const getRiskScope = (cost: string, schedule: string) =>
-  severityOrder[Math.max(severityOrder.indexOf(cost), severityOrder.indexOf(schedule))] || "";
+  return costSeverity >= scheduleSeverity ? "Cost" : "Schedule";
+};
+
+
+export const getGreatestConsequence = (
+  scope: string,
+  cost: string,
+  schedule: string
+) => {
+  const values = [
+    { name: "Scope", level: severityOrder.indexOf(scope) },
+    { name: "Cost", level: severityOrder.indexOf(cost) },
+    { name: "Schedule", level: severityOrder.indexOf(schedule) }
+  ];
+
+  return values.reduce((max, current) =>
+    current.level > max.level ? current : max
+  ).name;
+};

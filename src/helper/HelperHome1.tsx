@@ -202,7 +202,7 @@ const summaryStats = useMemo(() => {
             {filteredRisks.map((risk) => (
               <tr key={risk.issue_key}>
                 <td>
-                  <button type="button" className="text-link" onClick={() => navigate(`/single/${risk.issue_key}`)}>
+                  <button type="button" className="text-link" onClick={() => navigate(`/view/${risk.issue_key}`)}>
                     {risk.issue_key}
                   </button>
                 </td>

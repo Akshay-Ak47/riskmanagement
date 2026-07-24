@@ -114,6 +114,7 @@ function EditRiskPageHelper() {
   const createRisk = async () => {
   try {
     const request: RiskState = {
+       issue_key: risk.version_key ?? risk.issue_key,
       summary: risk.summary,
       status: risk.status,
       risk_group: risk.risk_group,
@@ -151,6 +152,7 @@ function EditRiskPageHelper() {
       submitted_by: risk.submitted_by,
     };
 
+    console.log(request);
     const success = await handleOperationResult(
       () => createRiskVersion(request),
       "Risk version created successfully",
@@ -180,7 +182,7 @@ function EditRiskPageHelper() {
         <div className="form-grid form-grid--wide">
           <label className="field-group">
             <span className="field-label">Issue key</span>
-            <input className="input" value={risk.version_key ?? risk.issue_key} disabled />
+            <input className="input" value={risk.version_key ?? risk.issue_key} disabled  onChange={handleChange}/>
           </label>
           <label className="field-group">
             <span className="field-label">Summary</span>

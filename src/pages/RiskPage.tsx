@@ -7,7 +7,7 @@ import { showMessage } from "../utils/alertUtils";
 import { ActionButton, Card, PageContainer, PageHeader } from "../components/ui";
 import FieldHelp from "../components/FieldHelp";
 import { fieldHelp } from "../config/fieldHelp";
-import { getCostConsequence, getSchedulePercentage, getScheduleConsequence,getRiskScope, } from "../utils/riskRules";
+import { getCostConsequence, getSchedulePercentage, getScheduleConsequence,getRiskScope,getGreatestConsequence, } from "../utils/riskRules";
 
 const probabilityOptions = ["Almost None", "Low", "Medium", "High", "Very High"];
 const consequenceOptions = ["Trivial", "Low", "Medium", "High", "Severe"];
@@ -74,22 +74,21 @@ function RiskPage() {
 //   setRisk({ ...risk, [name]: value });
 // };
 
+  
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
   const { name, value } = e.target;
+  const updatedRisk = { ...risk, [name]: value };
 
   if (name === "risk_cost") {
-  const cost = value === "" ? null : Number(value);
-  const consequenceCost = cost === null ? "" : getCostConsequence(cost);
-
-  return setRisk({
-    ...risk,
-    risk_cost: cost,
-    risk_consequence_cost: consequenceCost,
-    risk_scope: getRiskScope(consequenceCost, risk.risk_consequence_schedule),
-  });
+  updatedRisk.risk_cost = value === "" ? null : Number(value);
+  updatedRisk.risk_consequence_cost =
+    updatedRisk.risk_cost === null
+      ? ""
+      : getCostConsequence(updatedRisk.risk_cost);
 }
 
-  const updatedRisk = { ...risk, [name]: value };
+
   if (
   updatedRisk.risk_schedule_start &&
   updatedRisk.scheduled_date &&
@@ -108,6 +107,14 @@ function RiskPage() {
   return setRisk(updatedRisk);
 }
 
+// if (name === "risk_consequence_scope") {
+//   updatedRisk.greatest_risk_consequence = getGreatestConsequence(
+//     value,
+//     updatedRisk.risk_consequence_cost,
+//     updatedRisk.risk_consequence_schedule
+//   );
+// }
+
   if (
     name === "risk_schedule_start" ||
     name === "scheduled_date" ||
@@ -119,16 +126,17 @@ function RiskPage() {
       updatedRisk.risk_schedule_end
     );
 
+
     updatedRisk.taken_days = takenDays;
     updatedRisk.actual_days = actualDays;
     updatedRisk.schedule_percentage = percentage;
     updatedRisk.risk_consequence_schedule = percentage === null ? "" : getScheduleConsequence(percentage);
-    updatedRisk.risk_scope = getRiskScope(updatedRisk.risk_consequence_cost, updatedRisk.risk_consequence_schedule);
-    updatedRisk.risk_scope = getRiskScope(
-  updatedRisk.risk_consequence_cost,
-  updatedRisk.risk_consequence_schedule
-);
+   
   }
+
+updatedRisk.risk_scope = getRiskScope(updatedRisk.risk_consequence_cost,updatedRisk.risk_consequence_schedule);
+
+updatedRisk.greatest_risk_consequence = getGreatestConsequence(updatedRisk.risk_consequence_scope,updatedRisk.risk_consequence_cost,updatedRisk.risk_consequence_schedule);
 
   setRisk(updatedRisk);
 };
@@ -238,7 +246,7 @@ function RiskPage() {
           </label>
           <label className="field-group">
             <span className="field-label">Greatest consequence</span>
-            <select className="select" name="greatest_risk_consequence" value={risk.greatest_risk_consequence} onChange={handleChange}>
+            <select className="select" name="greatest_risk_consequence" value={risk.greatest_risk_consequence} onChange={handleChange} disabled>
               <option value="">Select Type</option>
               {greatestConsequenceOptions.map((option) => (
                 <option key={option} value={option}>{option}</option>
@@ -293,8 +301,8 @@ function RiskPage() {
             <input className="input" value={risk.risk_scope} disabled />
           </label>
           <label className="field-group">
-            <span className="field-label">Consequence scope</span>
-            <select className="select" name="risk_consequence_scope" value={risk.risk_consequence_scope} onChange={handleChange}>
+            <span className="field-label">Consequence scope *</span>
+            <select className="select" name="risk_consequence_scope" value={risk.risk_consequence_scope} onChange={handleChange} required>
               <option value="">Select Consequence Scope</option>
               {consequenceOptions.map((option) => (
                 <option key={option} value={option}>{option}</option>
