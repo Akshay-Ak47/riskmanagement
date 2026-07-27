@@ -4,7 +4,14 @@ import { ActionButton, Card, PageContainer, PageHeader } from "../components/ui"
 import { createRiskVersion, getEditableRisk, handleOperationResult } from "../services/riskService";
 import type { RiskViewState } from "../types/riskView";
 import type { RiskState } from "../types/risk";
-import { open } from "@tauri-apps/plugin-dialog";
+import {
+    getCostConsequence,
+    getSchedulePercentage,
+    getScheduleConsequence,
+    getRiskScope,
+    getGreatestConsequence,
+} from "../utils/riskRules";
+import { showMessage } from "../utils/alertUtils";import { open } from "@tauri-apps/plugin-dialog";
 import FieldHelp from "../components/FieldHelp";
 import { fieldHelp } from "../config/fieldHelp";
 
@@ -51,6 +58,10 @@ const initialRiskState: RiskViewState = {
   risk_owner_name: "",
   submitted_by: "",
   created_at: "",
+  scheduled_date: "",
+  actual_days: null,
+  taken_days: null,
+  schedule_percentage: null,
 };
 
 function EditRiskPageHelper() {
@@ -60,13 +71,92 @@ function EditRiskPageHelper() {
   const [isStatusOpen, setIsStatusOpen] = useState(false);
 
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setRisk((prev) => ({
-      ...prev,
-      [name]: name === "risk_cost" ? (value === "" ? null : Number(value)) : value,
-    }));
+  const handleChange = (
+  e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+) => {
+
+  const { name, value } = e.target;
+
+  const updatedRisk = {
+    ...risk,
+    [name]: value,
   };
+
+  if (name === "risk_cost") {
+
+    updatedRisk.risk_cost =
+      value === ""
+        ? null
+        : Number(value);
+
+    updatedRisk.risk_consequence_cost =
+      updatedRisk.risk_cost === null
+        ? ""
+        : getCostConsequence(updatedRisk.risk_cost);
+  }
+
+  if (
+    updatedRisk.risk_schedule_start &&
+    updatedRisk.scheduled_date &&
+    new Date(updatedRisk.scheduled_date) <
+      new Date(updatedRisk.risk_schedule_start)
+  ) {
+
+    showMessage(
+      "error",
+      "Invalid Date",
+      "Scheduled Date cannot be earlier than Schedule Start."
+    );
+
+    updatedRisk.actual_days = null;
+    updatedRisk.taken_days = null;
+    updatedRisk.schedule_percentage = null;
+
+    return setRisk(updatedRisk);
+  }
+
+  if (
+    name === "risk_schedule_start" ||
+    name === "scheduled_date" ||
+    name === "risk_schedule_end"
+  ) {
+
+    const {
+      takenDays,
+      actualDays,
+      percentage,
+    } = getSchedulePercentage(
+      updatedRisk.risk_schedule_start,
+      updatedRisk.scheduled_date,
+      updatedRisk.risk_schedule_end
+    );
+
+    updatedRisk.taken_days = takenDays;
+
+    updatedRisk.actual_days = actualDays;
+
+    updatedRisk.schedule_percentage = percentage;
+
+    updatedRisk.risk_consequence_schedule =
+      percentage === null
+        ? ""
+        : getScheduleConsequence(percentage);
+  }
+
+  updatedRisk.risk_scope = getRiskScope(
+    updatedRisk.risk_consequence_cost,
+    updatedRisk.risk_consequence_schedule
+  );
+
+  updatedRisk.greatest_risk_consequence =
+    getGreatestConsequence(
+      updatedRisk.risk_consequence_scope,
+      updatedRisk.risk_consequence_cost,
+      updatedRisk.risk_consequence_schedule
+    );
+
+  setRisk(updatedRisk);
+};
 
   const resetRiskForm = () => { setRisk(initialRiskState); };
 
@@ -138,10 +228,10 @@ function EditRiskPageHelper() {
       risk_schedule_end: risk.risk_schedule_end,
 
       // Required by RiskState
-      scheduled_date: "",
-      actual_days: null,
-      taken_days: null,
-      schedule_percentage: null,
+      scheduled_date: risk.scheduled_date,
+      actual_days: risk.actual_days,
+      taken_days: risk.taken_days,
+      schedule_percentage: risk.schedule_percentage,
 
       risk_consequence_schedule: risk.risk_consequence_schedule,
       residual_risk_consequence_cost: risk.residual_risk_consequence_cost,
@@ -336,8 +426,28 @@ function EditRiskPageHelper() {
             <input className="input" type="date" name="risk_schedule_start" value={risk.risk_schedule_start} onChange={handleChange} />
           </label>
           <label className="field-group">
+            <span className="field-label">Scheduled Date</span>
+            <input
+              className="input"
+              type="date"
+              name="scheduled_date"
+              value={risk.scheduled_date}
+              onChange={handleChange}
+            />
+          </label>
+          <label className="field-group">
             <span className="field-label">Schedule end</span>
             <input className="input" type="date" name="risk_schedule_end" value={risk.risk_schedule_end} onChange={handleChange} />
+          </label>
+          <label className="field-group">
+            <span className="field-label">
+            Schedule Percentage
+            </span>
+            <input
+            className="input"
+            value={risk.schedule_percentage ?? ""}
+            disabled
+            />
           </label>
           <label className="field-group">
             <span className="field-label">Consequence schedule</span>
