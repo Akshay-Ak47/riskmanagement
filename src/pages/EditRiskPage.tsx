@@ -1,16 +1,7 @@
+import RiskForm from "../components/RiskForm";
 
-import EditRiskPageHelper from"../helper/EditRiskPageHelper";
 function EditRiskPage() {
-
-    return (
-
-        <div>
-
-
-      <EditRiskPageHelper/>
-
-        </div>
-    );
+  return <RiskForm mode="edit" />;
 }
 
 export default EditRiskPage;
