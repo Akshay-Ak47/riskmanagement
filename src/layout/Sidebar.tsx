@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { NavLink } from "react-router-dom";
 
 type SidebarProps = {
@@ -14,6 +15,10 @@ const navItems = [
 ];
 
 function Sidebar({ isOpen, isCollapsed, onNavigate }: SidebarProps) {
+
+  const [showMatrix, setShowMatrix] = useState(false);
+const [matrixPinned, setMatrixPinned] = useState(false);
+
   return (
     <aside className={`app-sidebar ${isOpen ? "is-open" : ""} ${isCollapsed ? "is-collapsed" : ""}`}>
       <div className="app-sidebar__brand">
@@ -29,7 +34,49 @@ function Sidebar({ isOpen, isCollapsed, onNavigate }: SidebarProps) {
             {!isCollapsed ? <span className="nav-link__label">{item.label}</span> : null}
           </NavLink>
         ))}
+        <div
+  onMouseEnter={() => setShowMatrix(true)}
+  onMouseLeave={() => {
+    if (!matrixPinned) {
+      setShowMatrix(false);
+    }
+  }}
+>
+  <div
+  className="nav-link"
+  onClick={() => {
+    setMatrixPinned((prev) => !prev);
+    setShowMatrix((prev) => !prev);
+  }}
+>
+  <span className="nav-link__icon" aria-hidden="true">
+    ▦
+  </span>
+
+  {!isCollapsed ? (
+    <span className="nav-link__label">Matrix</span>
+  ) : null}
+</div>
+
+  {showMatrix && (
+    <div
+      className="matrix-overlay"
+      onMouseEnter={() => setShowMatrix(true)}
+      onMouseLeave={() => {
+        if (!matrixPinned) {
+          setShowMatrix(false);
+        }
+      }}
+    >
+      <img
+        src="/risk-matrix.png"
+        alt="Risk Probability and Consequence Matrix"
+      />
+    </div>
+  )}
+</div>
       </nav>
+      
     </aside>
   );
 }

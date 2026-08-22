@@ -111,3 +111,19 @@ export const getGreatestConsequence = (
     current.level > max.level ? current : max
   ).name;
 };
+
+export const getResidualRiskJustification = (
+  cost: string,
+  schedule: string,
+  scope: string
+) => {
+  const values = [
+    { name: "Residual Cost", level: severityOrder.indexOf(cost) },
+    { name: " Residual Schedule", level: severityOrder.indexOf(schedule) },
+    { name: " Residual Scope", level: severityOrder.indexOf(scope) }
+  ];
+
+  return values.reduce((max, current) =>
+    current.level > max.level ? current : max
+  ).name;
+};

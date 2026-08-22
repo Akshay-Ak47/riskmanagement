@@ -14,12 +14,13 @@ import {
   getScheduleConsequence,
   getRiskScope,
   getGreatestConsequence,
+  getResidualRiskJustification,
 } from "../utils/riskRules";
 import { createRiskVersion, getEditableRisk, handleOperationResult } from "../services/riskService";
 
 const probabilityOptions = ["Almost None", "Low", "Medium", "High", "Very High"];
 const consequenceOptions = ["Trivial", "Low", "Medium", "High", "Severe"];
-const statusOptions = ["", "New", "Active", "Retired"];
+const statusOptions = ["", "New", "Active", "Retired","withdrawn"];
 const groupOptions = ["", "Group A", "Group B"];
 const greatestConsequenceOptions = ["Scope", "Cost", "Schedule"];
 const strategyOptions = [
@@ -164,6 +165,18 @@ export default function RiskForm({ mode }: RiskFormProps) {
       updatedRisk.risk_consequence_schedule
     );
 
+   if (
+  name === "residual_risk_consequence_cost" ||
+  name === "residual_risk_consequence_schedule" ||
+  name === "residual_risk_consequence_scope"
+) {
+  updatedRisk.risk_justification = getResidualRiskJustification(
+    updatedRisk.residual_risk_consequence_cost,
+    updatedRisk.residual_risk_consequence_schedule,
+    updatedRisk.residual_risk_consequence_scope
+  );
+}
+
     setRisk(updatedRisk);
   };
 
@@ -182,6 +195,13 @@ export default function RiskForm({ mode }: RiskFormProps) {
       attached_document_path: String(filePath),
     }));
   };
+
+  const handleRemoveAttachment = () => {
+  setRisk((prev) => ({
+    ...prev,
+    attached_document_path: "",
+  }));
+};
 
   const handleReset = () => {
     if (mode === "create") {
@@ -280,7 +300,7 @@ export default function RiskForm({ mode }: RiskFormProps) {
       >
         <div className="form-grid form-grid--wide">
           <label className="field-group">
-            <span className="field-label">Issue key</span>
+            <span className="field-label"> {mode === "create" ? "Issue key" : "Version key"}</span>
             <input
               className="input"
               value={mode === "create" ? "[AUTO GENERATED ISSUE KEY]" : (risk.version_key ?? risk.issue_key)}
@@ -342,6 +362,7 @@ export default function RiskForm({ mode }: RiskFormProps) {
 
           {mode === "create" ? (
             <label className="field-group">
+              <div className="field-group">
               <span className="field-label">WBS element</span>
               <div className="u-flex u-gap-3">
                 <input
@@ -354,6 +375,18 @@ export default function RiskForm({ mode }: RiskFormProps) {
                 <ActionButton variant="secondary" onClick={handleFileChange}>
                   Attachment
                 </ActionButton>
+                 </div>
+                  <div className="file-display" style={{ fontWeight: "bold" }}>
+              
+                    {risk.attached_document_path
+                        ? `File chosen: ${risk.attached_document_path.split(/[\\/]/).pop()}`
+                       : "No file chosen"}
+              </div>
+              {risk.attached_document_path && (
+  <ActionButton variant="secondary" onClick={handleRemoveAttachment}>
+    Cancel Attachment
+  </ActionButton>
+)}
               </div>
             </label>
           ) : (
@@ -368,15 +401,28 @@ export default function RiskForm({ mode }: RiskFormProps) {
                   onChange={handleChange}
                 />
               </label>
+            
+
               <div className="field-group">
-                <span className="field-label">Attachment</span>
-                <button type="button" onClick={handleFileChange}>
-                  Select Attachment
-                </button>
-                {risk.attached_document_path && <small>{risk.attached_document_path}</small>}
+                  <span className="field-label">Attachment</span>
+
+                    <ActionButton variant="secondary" onClick={handleFileChange}>
+                        Attachment
+                     </ActionButton>
+
+               <div className="file-display" style={{ fontWeight: "bold" }}>
+                                            {risk.attached_document_path
+                               ? `File chosen: ${risk.attached_document_path.split(/[\\/]/).pop()}`
+                              : "No file chosen"}
+                 </div>
+                 {risk.attached_document_path && (
+                           <ActionButton variant="secondary" onClick={handleRemoveAttachment}>
+                         Cancel Attachment
+                             </ActionButton>
+                          )}
               </div>
-            </>
-          )}
+                </>
+               )}
 
           <div className="field-group">
             <span className="field-label">Description</span>
@@ -418,23 +464,7 @@ export default function RiskForm({ mode }: RiskFormProps) {
             </select>
           </label>
 
-          <label className="field-group">
-            <span className="field-label">Greatest consequence</span>
-            <select
-              className="select"
-              name="greatest_risk_consequence"
-              value={risk.greatest_risk_consequence}
-              onChange={handleChange}
-              disabled={mode === "create"}
-            >
-              <option value="">{mode === "create" ? "Select Type" : "Select type"}</option>
-              {greatestConsequenceOptions.map((option) => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
-          </label>
+          
 
           {mode === "edit" && (
             <label className="field-group">
@@ -618,6 +648,25 @@ export default function RiskForm({ mode }: RiskFormProps) {
             </span>
             <input className="input" value={risk.risk_consequence_schedule || ""} disabled />
           </label>
+
+          <label className="field-group">
+            <span className="field-label">Greatest consequence</span>
+            <select
+              className="select"
+              name="greatest_risk_consequence"
+              value={risk.greatest_risk_consequence}
+              onChange={handleChange}
+              disabled={mode === "create"}
+            >
+              <option value="">{mode === "create" ? "Select Type" : "Select type"}</option>
+              {greatestConsequenceOptions.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          </label>
+
         </div>
       </Card>
 
@@ -681,18 +730,17 @@ export default function RiskForm({ mode }: RiskFormProps) {
             </select>
           </label>
 
-          {mode === "create" && (
-            <label className="field-group">
-              <span className="field-label">Risk justification</span>
-              <textarea
-                className="textarea"
-                name="risk_justification"
-                placeholder="Risk Justification"
-                value={risk.risk_justification}
-                onChange={handleChange}
-              />
-            </label>
-          )}
+          <label className="field-group">
+  <span className="field-label">Risk justification</span>
+  <textarea
+    className="textarea"
+    name="risk_justification"
+    placeholder={mode === "create" ? "Risk Justification" : "Risk justification"}
+    value={risk.risk_justification}
+    onChange={handleChange}
+    disabled
+  />
+</label>
         </div>
       </Card>
 

@@ -880,3 +880,51 @@ img {
   border-color: #2563eb;
   box-shadow: 0 0 0 3px rgba(37, 99, 235, .15);
 }
+
+.matrix-sidebar-item {
+  position: relative;
+}
+
+.matrix-sidebar-item .nav-link {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  font: inherit;
+}
+
+.matrix-overlay {
+  position: fixed;
+  left: 100px;
+  top: 100px;
+  width: 1110px;
+  max-width: calc(100vw - 300px);
+  max-height: 80vh;
+  overflow: auto;
+  padding: 15px;
+  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  z-index: 9999;
+}
+
+.matrix-overlay img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.file-display {
+  margin-top: 8px;
+  padding: 10px 14px;
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--surface-muted);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
