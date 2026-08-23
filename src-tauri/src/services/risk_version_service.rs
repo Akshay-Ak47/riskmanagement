@@ -166,6 +166,9 @@ pub fn create_risk_version(
             risk_schedule_end:
                 risk.risk_schedule_end,
 
+            scheduled_date:
+                risk.scheduled_date,
+
             risk_consequence_schedule:
                 risk.risk_consequence_schedule,
 

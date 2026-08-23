@@ -58,6 +58,8 @@ pub fn create_risk_versions_table(
 
             risk_schedule_end TEXT,
 
+            scheduled_date TEXT,
+
             risk_consequence_schedule TEXT,
 
             residual_risk_consequence_cost TEXT,

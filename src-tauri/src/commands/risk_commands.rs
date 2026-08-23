@@ -103,6 +103,8 @@ pub fn create_risk(
 
             risk_schedule_end,
 
+            scheduled_date,
+
             risk_consequence_schedule,
 
             residual_risk_consequence_cost,
@@ -126,7 +128,8 @@ pub fn create_risk(
             ?11, ?12, ?13, ?14, ?15,
             ?16, ?17, ?18, ?19, ?20,
             ?21, ?22, ?23, ?24, ?25,
-            ?26, ?27, ?28, ?29, ?30
+            ?26, ?27, ?28, ?29, ?30,
+            ?31
 
         )
         ",
@@ -175,6 +178,8 @@ pub fn create_risk(
             risk.risk_schedule_start,
 
             risk.risk_schedule_end,
+
+            risk.scheduled_date,
 
             risk.risk_consequence_schedule,
 

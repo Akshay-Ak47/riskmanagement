@@ -61,6 +61,7 @@ function HelperRiskHistoryPage() {
     "Consequence Cost",
     "Schedule Start",
     "Schedule End",
+    "Scheduled Date",
     "Consequence Schedule",
     "Residual Cost",
     "Residual Schedule",
@@ -107,6 +108,7 @@ function HelperRiskHistoryPage() {
 
     <td>{item.risk_schedule_start ?? "-"}</td>
     <td>{item.risk_schedule_end ?? "-"}</td>
+    <td>{item.scheduled_date ?? "-"}</td>
     <td>{item.risk_consequence_schedule ?? "-"}</td>
 
     <td>{item.residual_risk_consequence_cost ?? "-"}</td>

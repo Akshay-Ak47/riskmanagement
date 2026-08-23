@@ -49,6 +49,8 @@ pub struct RiskVersionModel {
 
     pub risk_schedule_end: Option<String>,
 
+    pub scheduled_date: Option<String>,
+
     pub risk_consequence_schedule: Option<String>,
 
     pub residual_risk_consequence_cost: Option<String>,

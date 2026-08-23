@@ -60,6 +60,7 @@ pub fn insert_risk_version(
             risk_consequence_cost,
             risk_schedule_start,
             risk_schedule_end,
+            scheduled_date,
             risk_consequence_schedule,
             residual_risk_consequence_cost,
             residual_risk_consequence_schedule,
@@ -75,7 +76,7 @@ pub fn insert_risk_version(
             ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
             ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
             ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
-            ?,?
+            ?,?,?
 
         )
         ",
@@ -104,6 +105,7 @@ pub fn insert_risk_version(
             &risk_version.risk_consequence_cost,
             &risk_version.risk_schedule_start,
             &risk_version.risk_schedule_end,
+            &risk_version.scheduled_date,
             &risk_version.risk_consequence_schedule,
             &risk_version.residual_risk_consequence_cost,
             &risk_version.residual_risk_consequence_schedule,
@@ -163,6 +165,7 @@ pub fn get_risk_versions_by_parent_key(
                 risk_consequence_cost,
                 risk_schedule_start,
                 risk_schedule_end,
+                scheduled_date,
                 risk_consequence_schedule,
                 residual_risk_consequence_cost,
                 residual_risk_consequence_schedule,
@@ -210,14 +213,15 @@ pub fn get_risk_versions_by_parent_key(
                     risk_consequence_cost: row.get(21)?,
                     risk_schedule_start: row.get(22)?,
                     risk_schedule_end: row.get(23)?,
-                    risk_consequence_schedule: row.get(24)?,
-                    residual_risk_consequence_cost: row.get(25)?,
-                    residual_risk_consequence_schedule: row.get(26)?,
-                    residual_risk_consequence_scope: row.get(27)?,
-                    comment: row.get(28)?,
-                    created_at: row.get(29)?,
-                    risk_owner_name: row.get(30)?,
-                    submitted_by: row.get(31)?
+                    scheduled_date: row.get(24)?,
+                    risk_consequence_schedule: row.get(25)?,
+                    residual_risk_consequence_cost: row.get(26)?,
+                    residual_risk_consequence_schedule: row.get(27)?,
+                    residual_risk_consequence_scope: row.get(28)?,
+                    comment: row.get(29)?,
+                    created_at: row.get(30)?,
+                    risk_owner_name: row.get(31)?,
+                    submitted_by: row.get(32)?
                 })
             }
         )
@@ -262,6 +266,7 @@ pub fn get_latest_version_by_parent_key(
                 risk_consequence_cost,
                 risk_schedule_start,
                 risk_schedule_end,
+                scheduled_date,
                 risk_consequence_schedule,
                 residual_risk_consequence_cost,
                 residual_risk_consequence_schedule,
@@ -309,14 +314,15 @@ pub fn get_latest_version_by_parent_key(
                 risk_consequence_cost: row.get(21)?,
                 risk_schedule_start: row.get(22)?,
                 risk_schedule_end: row.get(23)?,
-                risk_consequence_schedule: row.get(24)?,
-                residual_risk_consequence_cost: row.get(25)?,
-                residual_risk_consequence_schedule: row.get(26)?,
-                residual_risk_consequence_scope: row.get(27)?,
-                comment: row.get(28)?,
-                created_at: row.get(29)?,
-                risk_owner_name: row.get(30)?,
-                submitted_by: row.get(31)?
+                scheduled_date: row.get(24)?,
+                risk_consequence_schedule: row.get(25)?,
+                residual_risk_consequence_cost: row.get(26)?,
+                residual_risk_consequence_schedule: row.get(27)?,
+                residual_risk_consequence_scope: row.get(28)?,
+                comment: row.get(29)?,
+                created_at: row.get(30)?,
+                risk_owner_name: row.get(31)?,
+                submitted_by: row.get(32)?
             })
         }
     );
@@ -367,6 +373,7 @@ pub fn get_risk_version_by_key(
                 risk_consequence_cost,
                 risk_schedule_start,
                 risk_schedule_end,
+                scheduled_date,
                 risk_consequence_schedule,
                 residual_risk_consequence_cost,
                 residual_risk_consequence_schedule,
@@ -412,14 +419,15 @@ pub fn get_risk_version_by_key(
                     risk_consequence_cost: row.get(21)?,
                     risk_schedule_start: row.get(22)?,
                     risk_schedule_end: row.get(23)?,
-                    risk_consequence_schedule: row.get(24)?,
-                    residual_risk_consequence_cost: row.get(25)?,
-                    residual_risk_consequence_schedule: row.get(26)?,
-                    residual_risk_consequence_scope: row.get(27)?,
-                    comment: row.get(28)?,
-                    created_at: row.get(29)?,
-                    risk_owner_name: row.get(30)?,
-                    submitted_by: row.get(31)?
+                    scheduled_date: row.get(24)?,
+                    risk_consequence_schedule: row.get(25)?,
+                    residual_risk_consequence_cost: row.get(26)?,
+                    residual_risk_consequence_schedule: row.get(27)?,
+                    residual_risk_consequence_scope: row.get(28)?,
+                    comment: row.get(29)?,
+                    created_at: row.get(30)?,
+                    risk_owner_name: row.get(31)?,
+                    submitted_by: row.get(32)?
                 })
             }
         )

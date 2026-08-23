@@ -44,6 +44,8 @@ pub struct Risk {
     pub risk_schedule_start: Option<String>,
 
     pub risk_schedule_end: Option<String>,
+    
+    pub scheduled_date: Option<String>,
 
     pub risk_consequence_schedule: Option<String>,
 

@@ -48,7 +48,7 @@ setPopupStyle({ top: rect.bottom + 8, left: Math.max(10, Math.min(rect.left, win
             padding: 16,
             boxShadow: "0 8px 24px rgba(0,0,0,.15)",
             zIndex: 9999,
-            maxHeight: "90vh",
+            maxHeight: "90vh", 
             overflowY: "auto"
           }}
         >

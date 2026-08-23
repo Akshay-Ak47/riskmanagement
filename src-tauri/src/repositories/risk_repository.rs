@@ -32,6 +32,7 @@ pub fn get_all_risks(
                 risk_consequence_cost,
                 risk_schedule_start,
                 risk_schedule_end,
+                scheduled_date,
                 risk_consequence_schedule,
                 residual_risk_consequence_cost,
                 residual_risk_consequence_schedule,
@@ -72,14 +73,15 @@ pub fn get_all_risks(
                 risk_consequence_cost: row.get(19)?,
                 risk_schedule_start: row.get(20)?,
                 risk_schedule_end: row.get(21)?,
-                risk_consequence_schedule: row.get(22)?,
-                residual_risk_consequence_cost: row.get(23)?,
-                residual_risk_consequence_schedule: row.get(24)?,
-                residual_risk_consequence_scope: row.get(25)?,
-                comment: row.get(26)?,
-                created_at: row.get(27)?,
-                risk_owner_name: row.get(28)?,
-                submitted_by: row.get(29)?
+                scheduled_date: row.get(22)?,
+                risk_consequence_schedule: row.get(23)?,
+                residual_risk_consequence_cost: row.get(24)?,
+                residual_risk_consequence_schedule: row.get(25)?,
+                residual_risk_consequence_scope: row.get(26)?,
+                comment: row.get(27)?,
+                created_at: row.get(28)?,
+                risk_owner_name: row.get(29)?,
+                submitted_by: row.get(30)?
             })
         })
         .map_err(|e| e.to_string())?;
@@ -139,6 +141,7 @@ pub fn get_risk_by_key(
                 risk_consequence_cost,
                 risk_schedule_start,
                 risk_schedule_end,
+                scheduled_date,
                 risk_consequence_schedule,
                 residual_risk_consequence_cost,
                 residual_risk_consequence_schedule,
@@ -182,14 +185,15 @@ pub fn get_risk_by_key(
                     risk_consequence_cost: row.get(19)?,
                     risk_schedule_start: row.get(20)?,
                     risk_schedule_end: row.get(21)?,
-                    risk_consequence_schedule: row.get(22)?,
-                    residual_risk_consequence_cost: row.get(23)?,
-                    residual_risk_consequence_schedule: row.get(24)?,
-                    residual_risk_consequence_scope: row.get(25)?,
-                    comment: row.get(26)?,
-                    created_at: row.get(27)?,
-                    risk_owner_name: row.get(28)?,
-                    submitted_by: row.get(29)?
+                    scheduled_date: row.get(22)?,
+                    risk_consequence_schedule: row.get(23)?,
+                    residual_risk_consequence_cost: row.get(24)?,
+                    residual_risk_consequence_schedule: row.get(25)?,
+                    residual_risk_consequence_scope: row.get(26)?,
+                    comment: row.get(27)?,
+                    created_at: row.get(28)?,
+                    risk_owner_name: row.get(29)?,
+                    submitted_by: row.get(30)?
                 })
             }
         )

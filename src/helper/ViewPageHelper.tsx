@@ -32,7 +32,7 @@ function ViewPageHelper() {
 
   return (
     <PageContainer>
-      <PageHeader title="Risk details & history" description="Review the live risk record and all versioned changes stored for this item." />
+      <PageHeader title="Risk details & history" description="Review the live risk  record and all versioned changes stored for this item." />
 
     {risk ? (
   <div className="view-summary-grid">

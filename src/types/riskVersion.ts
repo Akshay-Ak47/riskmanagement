@@ -23,6 +23,7 @@ export type RiskVersionState = {
     risk_consequence_cost: string | null;
     risk_schedule_start: string | null;
     risk_schedule_end: string | null;
+    scheduled_date: string | null;
     risk_consequence_schedule: string | null;
     residual_risk_consequence_cost: string | null;
     residual_risk_consequence_schedule: string | null;

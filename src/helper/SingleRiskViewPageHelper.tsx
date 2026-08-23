@@ -128,6 +128,7 @@ function SingleRiskViewPageHelper() {
           {renderField("Risk cost", data.risk_cost)}
           {renderField("Risk consequence cost", data.risk_consequence_cost)}
           {renderField("Risk schedule start", data.risk_schedule_start)}
+          {renderField("Scheduled date", data.scheduled_date)}
           {renderField("Risk schedule end", data.risk_schedule_end)}
           {renderField("Risk consequence schedule", data.risk_consequence_schedule)}
           {renderField("Residual risk consequence cost", data.residual_risk_consequence_cost)}

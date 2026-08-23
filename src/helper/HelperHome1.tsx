@@ -236,7 +236,7 @@ const summaryStats = useMemo(() => {
 
     <input
         type="text"
-        placeholder="Search by ID, Summary, Owner..."
+        placeholder="Search by ID,Owner..."
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         className="search-input"
