@@ -480,6 +480,9 @@ img {
   border-radius: var(--radius-md);
   border: 1px solid var(--border-color);
   background: linear-gradient(180deg, #ffffff 0%, var(--bg-muted) 100%);
+   border: 1px solid #333;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 
@@ -927,4 +930,117 @@ img {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.metric-card {
+  border: 1px solid #333;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.metric-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.25);
+}
+
+.metric-card--total-risks {
+  background: #d9e5ff;
+  border-left: 4px solid #3b82f6;
+}
+
+.metric-card--active {
+  background: #d8f0df;
+  border-left: 4px solid #22c55e;
+}
+
+.metric-card--new {
+  background: #ffedbd;
+  border-left: 4px solid #f59e0b;
+}
+
+.metric-card--retired {
+  background: #dddddd;
+  border-left: 4px solid #6b7280;
+}
+
+.metric-card--withdrawn {
+  background: #ffd6d6;
+  border-left: 4px solid #ef4444;
+}
+
+.view-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.view-metric-card {
+  padding: 20px;
+  min-height: 105px;
+  border: 1px solid #333;
+  border-radius: 14px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.view-metric-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.25);
+}
+
+.view-metric-card:nth-child(1) {
+  background: #c7d8f5;
+  border-left: 4px solid #3b82f6;
+}
+
+.view-metric-card:nth-child(2) {
+  background: #c9e8d2;
+  border-left: 4px solid #22c55e;
+}
+
+.view-metric-card:nth-child(3) {
+  background: #f5dfaa;
+  border-left: 4px solid #f59e0b;
+}
+
+.view-metric-card:nth-child(4) {
+  background: #dec9f2;
+  border-left: 4px solid #8b5cf6;
+}
+
+
+.view-metric-card__label {
+  display: block;
+  margin-bottom: 10px;
+  color: #475569;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.view-metric-card__value {
+  display: block;
+  color: #0f172a;
+  font-size: 1.25rem;
+  font-weight: 600;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.single-risk-back-button {
+  border: 1px solid #334155;
+  border-radius: 8px;
+  background: #f1a9e0;
+  color: #1e293b;
+  font-weight: 600;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.single-risk-back-button:hover {
+  background: #e30fc3;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
 }

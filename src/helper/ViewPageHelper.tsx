@@ -34,26 +34,34 @@ function ViewPageHelper() {
     <PageContainer>
       <PageHeader title="Risk details & history" description="Review the live risk record and all versioned changes stored for this item." />
 
-      {risk ? (
-        <div className="summary-grid">
-          <div className="metric-card">
-            <span className="metric-card__label">Issue key</span>
-            <span className="metric-card__value">{risk.issue_key}</span>
-          </div>
-          <div className="metric-card">
-            <span className="metric-card__label">Status</span>
-            <span className="metric-card__value"><StatusBadge label={risk.status || "-"} tone={risk.status === "Active" ? "success" : risk.status === "New" ? "info" : "neutral"} /></span>
-          </div>
-          <div className="metric-card">
-            <span className="metric-card__label">Risk group</span>
-            <span className="metric-card__value">{risk.risk_group || "-"}</span>
-          </div>
-          <div className="metric-card">
-            <span className="metric-card__label">Owner</span>
-            <span className="metric-card__value">{risk.risk_owner_name || "-"}</span>
-          </div>
-        </div>
-      ) : null}
+    {risk ? (
+  <div className="view-summary-grid">
+    <div className="view-metric-card">
+      <span className="view-metric-card__label">Issue Key</span>
+      <span className="view-metric-card__value">{risk.issue_key}</span>
+    </div>
+
+    <div className="view-metric-card">
+      <span className="view-metric-card__label">Group</span>
+      <span className="view-metric-card__value">{risk.risk_group || "-"}</span>
+    </div>
+
+    <div className="view-metric-card">
+      <span className="view-metric-card__label">Status</span>
+      <span className="view-metric-card__value">
+        <StatusBadge
+          label={risk.status || "-"}
+          tone={risk.status === "Active" ? "success" : risk.status === "New" ? "info" : "neutral"}
+        />
+      </span>
+    </div>
+
+    <div className="view-metric-card">
+      <span className="view-metric-card__label">Risk Owner</span>
+      <span className="view-metric-card__value">{risk.risk_owner_name || "-"}</span>
+    </div>
+  </div>
+) : null}
 
       <Card title="Version timeline" description="The primary record appears first, followed by all available versions.">
         <DataTable headers={["Issue / version key", "Summary", "Status", "Group", "Owner", "Probability", "Consequence", "Document", "Actions"]}>

@@ -53,29 +53,38 @@ function SingleRiskViewPageHelper() {
       <PageHeader title={isVersion ? "Risk version details" : "Risk details"} description="A structured view of the selected risk record and its key attributes." />
       <ActionButton
   variant="secondary"
+   className="single-risk-back-button"
   onClick={() => navigate(-1)}
 >
   ← Back
 </ActionButton>
       <Card title={isVersion ? "Version summary" : "Primary record"} description={isVersion ? "Version metadata and history context" : "Operational context for the selected risk"}>
-        <div className="summary-grid">
-          <div className="metric-card">
-            <span className="metric-card__label">Status</span>
-            <span className="metric-card__value"><StatusBadge label={data.status || "-"} tone={data.status === "Active" ? "success" : data.status === "New" ? "info" : "neutral"} /></span>
-          </div>
-          <div className="metric-card">
-            <span className="metric-card__label">Group</span>
-            <span className="metric-card__value">{data.risk_group || "-"}</span>
-          </div>
-          <div className="metric-card">
-            <span className="metric-card__label">Probability</span>
-            <span className="metric-card__value">{data.risk_probability || "-"}</span>
-          </div>
-          <div className="metric-card">
-            <span className="metric-card__label">Consequence</span>
-            <span className="metric-card__value">{data.risk_consequence || "-"}</span>
-          </div>
-        </div>
+        <div className="view-summary-grid">
+  <div className="view-metric-card">
+    <span className="view-metric-card__label">Status</span>
+    <span className="view-metric-card__value">
+      <StatusBadge
+        label={data.status || "-"}
+        tone={data.status === "Active" ? "success" : data.status === "New" ? "info" : "neutral"}
+      />
+    </span>
+  </div>
+
+  <div className="view-metric-card">
+    <span className="view-metric-card__label">Group</span>
+    <span className="view-metric-card__value">{data.risk_group || "-"}</span>
+  </div>
+
+  <div className="view-metric-card">
+    <span className="view-metric-card__label">Probability</span>
+    <span className="view-metric-card__value">{data.risk_probability || "-"}</span>
+  </div>
+
+  <div className="view-metric-card">
+    <span className="view-metric-card__label">Consequence</span>
+    <span className="view-metric-card__value">{data.risk_consequence || "-"}</span>
+  </div>
+</div>
 
         <div className="form-grid form-grid--wide">
           {isVersion ? (

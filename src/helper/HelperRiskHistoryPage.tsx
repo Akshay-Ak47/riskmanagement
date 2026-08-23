@@ -23,16 +23,12 @@ function HelperRiskHistoryPage() {
     <PageContainer>
       <PageHeader title="Risk history" description="Audit log of all recorded changes, version snapshots, and deletions for the workspace." />
 
-      <div className="summary-grid">
-        <div className="metric-card">
-          <span className="metric-card__label">Records</span>
-          <span className="metric-card__value">{history.length}</span>
-        </div>
-        <div className="metric-card">
-          <span className="metric-card__label">Latest event</span>
-          <span className="metric-card__value">{history[0]?.record_type || "-"}</span>
-        </div>
-      </div>
+      <div className="view-summary-grid">
+  <div className="view-metric-card">
+    <span className="view-metric-card__label">Records</span>
+    <span className="view-metric-card__value">{history.length}</span>
+  </div>
+</div>
 
       <Card title="History timeline" description="The full audit trail remains available in a compact and scroll-friendly table.">
         {history.length === 0 ? (

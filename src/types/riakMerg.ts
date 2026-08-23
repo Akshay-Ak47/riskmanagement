@@ -24,6 +24,7 @@ export type RiskMerge = {
     risk_consequence_cost: string;
     risk_schedule_start: string;
     risk_schedule_end: string;
+    scheduled_date?: string;
     risk_consequence_schedule: string;
     residual_risk_consequence_cost: string;
     residual_risk_consequence_schedule: string;
